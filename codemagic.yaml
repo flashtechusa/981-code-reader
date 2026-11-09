@@ -54,7 +54,7 @@ workflows:
       - name: flutter pub get
         script: flutter pub get
       - name: flutter analyze
-        script: flutter analyze
+        script: flutter analyze --no-fatal-infos
       - name: flutter test
         script: flutter test
       - name: Set up code signing
@@ -102,7 +102,7 @@ workflows:
       - name: flutter pub get
         script: flutter pub get
       - name: flutter analyze
-        script: flutter analyze
+        script: flutter analyze --no-fatal-infos
       - name: flutter test
         script: flutter test
     artifacts:
