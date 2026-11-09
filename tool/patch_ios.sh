@@ -34,6 +34,16 @@ if [[ -x "$PB" ]]; then
   "$PB" -c "Delete :UISupportedInterfaceOrientations" "$PLIST" 2>/dev/null || true
   "$PB" -c "Add :UISupportedInterfaceOrientations array" "$PLIST"
   "$PB" -c "Add :UISupportedInterfaceOrientations:0 string UIInterfaceOrientationPortrait" "$PLIST"
+  # App Store rejects (ITMS-90474) unless iPad either declares all four
+  # orientations or opts out of multitasking. We do both and also build for
+  # iPhone only (TARGETED_DEVICE_FAMILY below).
+  "$PB" -c "Delete :UISupportedInterfaceOrientations~ipad" "$PLIST" 2>/dev/null || true
+  "$PB" -c "Add :UISupportedInterfaceOrientations~ipad array" "$PLIST"
+  "$PB" -c "Add :UISupportedInterfaceOrientations~ipad:0 string UIInterfaceOrientationPortrait" "$PLIST"
+  "$PB" -c "Add :UISupportedInterfaceOrientations~ipad:1 string UIInterfaceOrientationPortraitUpsideDown" "$PLIST"
+  "$PB" -c "Add :UISupportedInterfaceOrientations~ipad:2 string UIInterfaceOrientationLandscapeLeft" "$PLIST"
+  "$PB" -c "Add :UISupportedInterfaceOrientations~ipad:3 string UIInterfaceOrientationLandscapeRight" "$PLIST"
+  set_bool UIRequiresFullScreen true
   echo "patched $PLIST"
 else
   echo "PlistBuddy not available (not macOS?) - skipping Info.plist; the committed ios/Runner/Info.plist already contains the keys."
@@ -43,6 +53,8 @@ if [[ -f "$PBX" ]]; then
   # flutter create derives com.flashtech.boxsterSrs; normalise to the lower-case id.
   sed -i.bak -E "s/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/PRODUCT_BUNDLE_IDENTIFIER = ${BUNDLE_ID};/g" "$PBX"
   sed -i.bak -E "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" "$PBX"
+  # iPhone only (1 = iPhone, 2 = iPad). Avoids the iPad multitasking rules.
+  sed -i.bak -E 's/TARGETED_DEVICE_FAMILY = "[0-9,]+";/TARGETED_DEVICE_FAMILY = "1";/g' "$PBX"
   rm -f "$PBX.bak"
   echo "patched $PBX (bundle id ${BUNDLE_ID}, iOS 15.0)"
 fi
