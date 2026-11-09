@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -26,8 +27,25 @@ class _LogScreenState extends State<LogScreen> {
     super.dispose();
   }
 
+  final _shareKey = GlobalKey();
+
+  /// Where the share sheet should anchor (required on iPad, harmless on iPhone).
+  Rect? _origin() {
+    final box = _shareKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  void _toast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(msg)));
+  }
+
   Future<void> _share(Session s) async {
     final text = s.logText();
+    final origin = _origin();
     try {
       final dir = await getTemporaryDirectory();
       final stamp = DateTime.now()
@@ -36,12 +54,30 @@ class _LogScreenState extends State<LogScreen> {
           .replaceAll('-', '')
           .substring(0, 15);
       final f = File('${dir.path}/boxster_srs_$stamp.txt');
-      await f.writeAsString(text);
-      await Share.shareXFiles([XFile(f.path, mimeType: 'text/plain')],
-          subject: 'Boxster SRS log');
-    } catch (_) {
-      await Share.share(text, subject: 'Boxster SRS log');
+      await f.writeAsString(text, flush: true);
+      final r = await Share.shareXFiles(
+        [XFile(f.path, mimeType: 'text/plain', name: 'boxster_srs_$stamp.txt')],
+        subject: 'Boxster SRS log',
+        sharePositionOrigin: origin,
+      );
+      if (r.status == ShareResultStatus.unavailable) {
+        await Clipboard.setData(ClipboardData(text: text));
+        _toast('Share sheet unavailable - log copied to clipboard');
+      }
+    } catch (e) {
+      try {
+        await Share.share(text,
+            subject: 'Boxster SRS log', sharePositionOrigin: origin);
+      } catch (_) {
+        await Clipboard.setData(ClipboardData(text: text));
+        _toast('Could not open share sheet ($e) - log copied to clipboard');
+      }
     }
+  }
+
+  Future<void> _copy(Session s) async {
+    await Clipboard.setData(ClipboardData(text: s.logText()));
+    _toast('Log copied to clipboard (${s.log.length} lines)');
   }
 
   @override
@@ -67,6 +103,12 @@ class _LogScreenState extends State<LogScreen> {
             onPressed: () => setState(() => _follow = !_follow),
           ),
           IconButton(
+            tooltip: 'Copy log',
+            icon: const Icon(Icons.copy_all),
+            onPressed: entries.isEmpty ? null : () => _copy(s),
+          ),
+          IconButton(
+            key: _shareKey,
             tooltip: 'Share .txt',
             icon: const Icon(Icons.ios_share),
             onPressed: entries.isEmpty ? null : () => _share(s),
