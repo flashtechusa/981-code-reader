@@ -2,7 +2,7 @@
 #
 # Prerequisites (Codemagic UI, once):
 #   * Teams > Integrations > App Store Connect: add an API key and name the
-#     integration exactly "App Store Connect".
+#     integration (currently named "ColorChase").
 #   * Environment variables > group "code-signing" > CERTIFICATE_PRIVATE_KEY
 #     (an RSA private key in PEM form, marked Secret). The first build uses it
 #     to create the Apple Distribution certificate; later builds reuse it.
@@ -22,7 +22,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: App Store Connect
+      app_store_connect: ColorChase
     environment:
       flutter: stable
       xcode: latest
