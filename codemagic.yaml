@@ -3,10 +3,14 @@
 # Prerequisites (Codemagic UI, once):
 #   * Teams > Integrations > App Store Connect: add an API key and name the
 #     integration exactly "App Store Connect".
-#   * Register the bundle id com.flashtech.boxstersrs in the Apple Developer
-#     portal and create the app record in App Store Connect.
-#   * Automatic code signing below fetches/creates the certificate + profile
-#     for that bundle id - nothing is committed to the repo.
+#   * Environment variables > group "code-signing" > CERTIFICATE_PRIVATE_KEY
+#     (an RSA private key in PEM form, marked Secret). The first build uses it
+#     to create the Apple Distribution certificate; later builds reuse it.
+#   * The bundle id and App Store provisioning profile are created
+#     automatically by `fetch-signing-files --create`. The App Store Connect
+#     app record (needed only for the TestFlight upload) must be created once
+#     at appstoreconnect.apple.com with bundle id com.flashtech.boxstersrs.
+#   * Nothing secret is committed to the repo.
 #
 # The ios/ folder in git is only the hand-written Info.plist. Every workflow
 # therefore runs `flutter create .` first (it never overwrites existing files)
@@ -23,9 +27,14 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.flashtech.boxstersrs
+      # Signing is done by the "Set up code signing" script below, which can
+      # CREATE the bundle id, distribution certificate and App Store profile
+      # on first run. It needs CERTIFICATE_PRIVATE_KEY (RSA PEM, marked Secret)
+      # in an environment-variable group named `code-signing`. (The declarative
+      # `ios_signing:` block can only fetch profiles that already exist, which
+      # is why the first build failed with "No matching profiles found".)
+      groups:
+        - code-signing
       vars:
         BUNDLE_ID: com.flashtech.boxstersrs
         XCODE_WORKSPACE: ios/Runner.xcworkspace
