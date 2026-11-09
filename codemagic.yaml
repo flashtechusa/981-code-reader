@@ -65,6 +65,10 @@ workflows:
           xcode-project use-profiles
       - name: Install pods
         script: |
+          # Newer Flutter no longer writes ios/Podfile at `flutter create`; the
+          # tool generates it during an iOS build. --config-only does exactly
+          # that (and the Generated.xcconfig) without compiling.
+          flutter build ios --config-only --no-codesign
           cd ios
           pod install --repo-update
       - name: flutter build ipa
