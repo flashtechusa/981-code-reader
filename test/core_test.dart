@@ -10,6 +10,7 @@ import 'package:boxster_srs/core/transport.dart';
 import 'package:boxster_srs/core/uds.dart';
 import 'package:boxster_srs/core/units.dart';
 import 'package:boxster_srs/core/known_modules.dart';
+import 'package:boxster_srs/core/legacy_obd.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The fake adapter from the Python test, ported verbatim.
@@ -507,6 +508,74 @@ void _makeAgnosticTests() {
       expect(looksLikeAirbag({'system name': 'ORC'}, []), isTrue);
       expect(looksLikeAirbag({'system name': 'ACM audio'}, []), isFalse);
       expect(looksLikeAirbag({'system name': 'FORCMODULE'}, []), isFalse);
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Legacy OBD-II (K-line) mode
+// ---------------------------------------------------------------------------
+void _legacyTests() {
+  group('legacy OBD-II parsing', () {
+    test('formatted lines, noise and CAN frame indices are handled', () {
+      final lines = Elm327.parseLegacyLines(
+          'SEARCHING...\n41 0C 11 DE\n0: 49 02 01 57 50 30\nNO DATA\n>');
+      expect(lines.length, 2);
+      expect(lines[0], Uint8List.fromList([0x41, 0x0C, 0x11, 0xDE]));
+      expect(lines[1][0], 0x49);
+    });
+    test('K-line Mode 03 has no count byte', () {
+      final d = LegacyObd.decodeDtcLine(
+          Uint8List.fromList([0x43, 0x03, 0x01, 0x01, 0x71, 0x00, 0x00]),
+          sidObdReadStored,
+          false);
+      expect(d.map((x) => x.sae).toList(), ['P0301-00', 'P0171-00']);
+      expect(d.first.description, 'Cylinder 1 Misfire Detected');
+      expect(d.first.testFailed, isTrue);
+    });
+    test('CAN Mode 03 carries a count byte; Mode 07 is pending', () {
+      final d = LegacyObd.decodeDtcLine(
+          Uint8List.fromList([0x47, 0x01, 0x04, 0x20]), sidObdReadPending, true);
+      expect(d.single.sae, 'P0420-00');
+      expect(d.single.testFailed, isFalse);
+      expect(d.single.status, 0x04);
+    });
+    test('wrong-mode line is ignored', () {
+      expect(
+          LegacyObd.decodeDtcLine(
+              Uint8List.fromList([0x41, 0x00]), sidObdReadStored, false),
+          isEmpty);
+    });
+    test('legacyIsCan from ATDPN', () {
+      final e = Elm327(MockTransport((_) => '>'));
+      e.legacyProtocol = 'A5';
+      expect(e.legacyIsCan, isFalse);
+      e.legacyProtocol = 'A6';
+      expect(e.legacyIsCan, isTrue);
+      e.legacyProtocol = '3';
+      expect(e.legacyIsCan, isFalse);
+    });
+  });
+
+  group('legacy allow-list', () {
+    test('UDS services are refused in legacy mode; Mode 04 needs the flag',
+        () async {
+      final (elm, uds, t) = await connectFake();
+      elm.legacy = true;
+      final before = t.sent.length;
+      await expectLater(uds.request([sidReadDtc, 0x02, 0xFF]), throwsA(isA<UdsException>()));
+      await expectLater(uds.request([sidClearDtc, 0xFF, 0xFF, 0xFF]), throwsA(isA<UdsException>()));
+      await expectLater(uds.request([0x27, 0x01]), throwsA(isA<UdsException>()));
+      await expectLater(uds.request([sidObdClear]), throwsA(isA<UdsException>()));
+      expect(t.sent.length, before, reason: 'nothing may reach the wire');
+      elm.legacy = false;
+    });
+    test('legacy modes are refused when NOT in legacy mode', () async {
+      final (_, uds, t) = await connectFake();
+      final before = t.sent.length;
+      await expectLater(uds.request([sidObdReadStored]), throwsA(isA<UdsException>()));
+      await expectLater(uds.request([sidObdClear], allowObdClear: true), throwsA(isA<UdsException>()));
+      expect(t.sent.length, before);
     });
   });
 }

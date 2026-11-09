@@ -42,6 +42,23 @@ class Elm327 {
 
   /// Current addressing width: 11 or 29.
   int bits = 11;
+
+  /// Legacy OBD-II mode (pre-2008 cars: K-line ISO 9141-2 / KWP2000, or
+  /// whatever the ELM auto-detects). The adapter then runs formatted
+  /// (`ATCAF1 ATH0`) so responses arrive as plain `41 0C ..` lines with
+  /// headers stripped and multi-frame messages already reassembled.
+  bool legacy = false;
+
+  /// `ATDPN` result while in legacy mode, e.g. "A5" (auto, KWP fast) or "3".
+  String legacyProtocol = '';
+
+  /// True when the auto-detected legacy protocol is actually CAN (6..C), in
+  /// which case Mode 03/07 responses carry a DTC-count byte.
+  bool get legacyIsCan {
+    if (legacyProtocol.isEmpty) return false;
+    final c = legacyProtocol[legacyProtocol.length - 1].toUpperCase();
+    return '6789ABC'.contains(c);
+  }
   int? reqId;
   int? respId;
 
@@ -147,8 +164,64 @@ class Elm327 {
 
   /// ISO 15765-4 CAN 500 kbps: protocol 6 = 11-bit, 7 = 29-bit.
   Future<void> setBits(int b) async {
+    if (legacy) await leaveLegacy();
     bits = b;
     await cmd(b == 11 ? 'ATSP6' : 'ATSP7');
+  }
+
+  /// Switch to legacy OBD-II: protocol auto (`ATSP0`), formatted output,
+  /// adaptive timing on (K-line inter-byte timing varies a lot).
+  Future<void> enterLegacy() async {
+    legacy = true;
+    reqId = null;
+    respId = null;
+    await cmd('ATSP0');
+    await cmd('ATCAF1');
+    await cmd('ATH0');
+    await cmd('ATAT1');
+    legacyProtocol = '';
+  }
+
+  /// Back to the raw-frame CAN configuration used by the UDS code.
+  Future<void> leaveLegacy() async {
+    legacy = false;
+    legacyProtocol = '';
+    await cmd('ATCAF0');
+    await cmd('ATH1');
+    await cmd('ATAT0');
+  }
+
+  /// Ask the adapter which protocol it settled on (`ATDPN`).
+  Future<String> readLegacyProtocol() async {
+    final t = (await cmd('ATDPN')).split('\n').last.trim();
+    legacyProtocol = t;
+    return t;
+  }
+
+  /// Send a formatted (CAF1/H0) OBD-II request in legacy mode and return one
+  /// byte list per response line (one line per responding ECU / frame).
+  Future<List<Uint8List>> sendLegacy(List<int> payload,
+      {Duration timeout = const Duration(seconds: 3)}) async {
+    final text = await cmd(toHex(payload), timeout: timeout);
+    return parseLegacyLines(text);
+  }
+
+  /// Parse formatted ELM output: keep hex-only lines, drop noise.
+  static List<Uint8List> parseLegacyLines(String text) {
+    final out = <Uint8List>[];
+    final hexRe = RegExp(r'^[0-9A-Fa-f]+$');
+    for (var line in text.split('\n')) {
+      line = line.trim();
+      if (line.isEmpty || _noise.any(line.contains)) continue;
+      // ELM prefixes multi-frame CAN lines with "0:" / "1:" indices in CAF1
+      // mode; strip that so the remainder is hex.
+      final colon = line.indexOf(':');
+      if (colon > 0 && colon <= 3) line = line.substring(colon + 1).trim();
+      final hexstr = line.replaceAll(' ', '');
+      if (!hexRe.hasMatch(hexstr) || hexstr.length.isOdd) continue;
+      out.add(hexToBytes(hexstr));
+    }
+    return out;
   }
 
   /// ATST takes hex, units of 4 ms, max 0xFF (~1.02 s).

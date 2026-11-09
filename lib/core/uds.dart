@@ -31,6 +31,20 @@ const Set<int> allowedSids = {
 /// DiagnosticSessionControl sub-functions permitted (never 0x02 programming).
 const Set<int> allowedSessions = {0x01, 0x03};
 
+/// Legacy OBD-II (SAE J1979) modes permitted when the adapter is in legacy
+/// K-line mode. Nothing else - no UDS, no manufacturer modes.
+const int sidObdReadStored = 0x03;
+const int sidObdClear = 0x04;
+const int sidObdReadPending = 0x07;
+const int sidObdVehicleInfo = 0x09;
+const Set<int> legacyAllowedSids = {
+  sidObdMode01,
+  sidObdReadStored,
+  sidObdClear,
+  sidObdReadPending,
+  sidObdVehicleInfo,
+};
+
 const Map<int, String> nrcNames = {
   0x10: 'generalReject',
   0x11: 'serviceNotSupported',
@@ -157,9 +171,23 @@ class Uds {
   /// Returns {canId: responseBytes}.
   Future<Map<int, Uint8List>> request(List<int> payload,
       {Duration timeout = const Duration(milliseconds: 1500),
-      bool allowPowertrainClear = false}) async {
+      bool allowPowertrainClear = false,
+      bool allowObdClear = false}) async {
     if (payload.isEmpty) throw UdsException('empty request');
     final sid = payload[0];
+    if (elm.legacy) {
+      // Legacy OBD-II: its own, smaller allow-list. Mode 04 (clear emission
+      // DTCs) only from the confirmed per-module Clear path.
+      if (!legacyAllowedSids.contains(sid)) {
+        throw UdsException(
+            'refusing to send 0x${hexN(sid, 2)} in legacy OBD-II mode');
+      }
+      if (sid == sidObdClear && !allowObdClear) {
+        throw UdsException('OBD clear (Mode 04) needs the confirmed Clear path');
+      }
+      final lines = await elm.sendLegacy(payload, timeout: timeout);
+      return {for (var i = 0; i < lines.length; i++) i: lines[i]};
+    }
     if (!allowedSids.contains(sid)) {
       throw UdsException(
           'refusing to send service 0x${hexN(sid, 2)} - not on the allow-list');
@@ -230,6 +258,7 @@ class Uds {
     final resps = await request(payload,
         timeout: timeout, allowPowertrainClear: allowPowertrainClear);
     if (resps.isEmpty) return Uint8List(0);
+    if (elm.legacy) return resps.values.first; // headers stripped; first ECU
     final rid = elm.respId;
     if (rid != null && resps.containsKey(rid)) return resps[rid]!;
     if (resps.length == 1) return resps.values.first;

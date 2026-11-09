@@ -25,6 +25,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late final TextEditingController _port;
   late bool _powertrain;
   late UnitSystem _units;
+  late VehicleBus _bus;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _port = TextEditingController(text: s.port.toString());
     _powertrain = s.includePowertrain;
     _units = s.unitSystem;
+    _bus = s.bus;
   }
 
   @override
@@ -51,6 +53,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
       port: port,
       includePowertrain: _powertrain,
       unitSystem: _units,
+      bus: _bus,
     );
     if (mounted) Navigator.of(context).pop();
   }
@@ -93,6 +96,35 @@ class _SettingsSheetState extends State<_SettingsSheet> {
           const Text(
             'bbfly / ELM327 Wi-Fi default is 192.168.0.10 : 35000',
             style: TextStyle(color: AppColors.textDim, fontSize: 12),
+          ),
+          const SizedBox(height: 14),
+          const Text('Vehicle bus', style: TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<VehicleBus>(
+              segments: const [
+                ButtonSegment(
+                  value: VehicleBus.can,
+                  label: Text('CAN  (2008+)'),
+                ),
+                ButtonSegment(
+                  value: VehicleBus.legacy,
+                  label: Text('K-line legacy'),
+                ),
+              ],
+              selected: {_bus},
+              onSelectionChanged: (sel) => setState(() => _bus = sel.first),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            _bus == VehicleBus.can
+                ? 'Porsche 981, Ford F-150 and other CAN cars: every module, UDS.'
+                : 'Pre-CAN cars (e.g. 2004 Maserati 4200): engine ECU only via '
+                    'generic OBD-II - codes, clear, live data. First connect '
+                    'takes ~15 s while the adapter finds the protocol.',
+            style: const TextStyle(color: AppColors.textDim, fontSize: 12),
           ),
           const SizedBox(height: 14),
           const Text('Units', style: TextStyle(fontWeight: FontWeight.w600)),

@@ -76,6 +76,18 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
   bigger state framework.
 * `flutter analyze` and `flutter test` must stay green (warnings are fatal; infos such as `prefer_const_constructors` are not).
 
+## Legacy OBD-II (K-line) mode
+
+Settings "Vehicle bus: K-line legacy" is for pre-CAN cars (2004 Maserati 4200).
+`Elm327.enterLegacy()` -> `ATSP0 ATCAF1 ATH0 ATAT1` (formatted output, headers
+stripped). `Uds.request()` then applies `legacyAllowedSids` = {01, 03, 04, 07,
+09} ONLY and refuses every UDS service; Mode 04 needs `allowObdClear: true`,
+set only by `Session._legacyClear` after the typed CLEAR. `LegacyObd`
+(`lib/core/legacy_obd.dart`) synthesises one `Module` for the engine ECU
+(2-byte DTCs become `[a, b, 0x00]` with status 0x09 stored / 0x04 pending).
+Other modules on these cars (gearbox, ABS, airbag, NCR) are on separate
+K-lines with proprietary protocols - out of scope, do not guess at them.
+
 ## Units
 
 ECU values are decoded in SI (km/h, °C) and stay SI everywhere in `lib/core/`

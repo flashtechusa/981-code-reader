@@ -6,6 +6,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../core/clear.dart';
 import '../core/elm327.dart';
 import '../core/hex.dart';
+import '../core/legacy_obd.dart';
 import '../core/mock_adapter.dart';
 import '../core/module.dart';
 import '../core/obd_pids.dart';
@@ -40,6 +41,11 @@ class Session extends ChangeNotifier {
   Elm327? _elm;
   Uds? _uds;
   Scanner? _scanner;
+  LegacyObd? _legacy;
+
+  /// True while connected to a pre-CAN car in legacy OBD-II mode.
+  bool get legacyMode => _legacy != null;
+  String legacyProtocol = '';
 
   Elm327? get elm => _elm;
   Uds? get uds => _uds;
@@ -120,6 +126,15 @@ class Session extends ChangeNotifier {
       _scanner = Scanner(elm, _uds!);
       state = ConnState.connected;
       say('Connected: ${elm.adapterId}  battery ${elm.batteryText}');
+      if (settings.legacyBus) {
+        _setStatus('Finding OBD-II protocol (K-line init, up to ~20 s) ...');
+        final lg = LegacyObd(elm, _uds!);
+        legacyProtocol = await lg.connect();
+        _legacy = lg;
+        say('Legacy OBD-II: ${LegacyObd.protocolName(legacyProtocol)}');
+        say('Engine ECU only on this bus - gearbox / ABS / airbag need the '
+            'factory tool on pre-CAN cars.');
+      }
       if (elm.batteryLow) {
         say('WARNING: battery below 12.0 V. Low voltage is a classic cause of '
             'NRC 0x22 and of spurious airbag faults. Put a charger on it.');
@@ -132,6 +147,7 @@ class Session extends ChangeNotifier {
       await elm.close();
       _elm = null;
       _uds = null;
+      _legacy = null;
       state = ConnState.disconnected;
       _setStatus('Not connected', error: true);
       say('Can\'t reach adapter: $e');
@@ -146,6 +162,8 @@ class Session extends ChangeNotifier {
     _elm = null;
     _uds = null;
     _scanner = null;
+    _legacy = null;
+    legacyProtocol = '';
     if (e != null) {
       try {
         await e.cmd('ATPC', timeout: const Duration(milliseconds: 800));
@@ -178,6 +196,7 @@ class Session extends ChangeNotifier {
 
   Future<void> scan() async {
     if (!_guard()) return;
+    if (legacyMode) return _legacyScan();
     busy = true;
     stopLive();
     clearOutput();
@@ -218,6 +237,42 @@ class Session extends ChangeNotifier {
     }
   }
 
+  /// Legacy bus: there is no module scan - read the engine ECU's generic
+  /// OBD-II data (VIN, stored + pending codes) and present it as one module.
+  Future<void> _legacyScan() async {
+    busy = true;
+    stopLive();
+    clearOutput();
+    say('Legacy OBD-II (read-only): ${LegacyObd.protocolName(legacyProtocol)}');
+    try {
+      final lg = _legacy!;
+      _setStatus('reading VIN');
+      String? vin;
+      try {
+        vin = await lg.vin();
+      } catch (_) {}
+      _setStatus('reading stored + pending codes');
+      final dtcs = await lg.readDtcs();
+      final m = lg.engineModule(protocol: legacyProtocol, vin: vin, dtcs: dtcs);
+      modules
+        ..clear()
+        ..add(m);
+      say('');
+      say('[${m.address}] ${m.displayName}');
+      for (final e in m.info.entries) {
+        say('   ${e.key}: ${e.value}');
+      }
+      _sayDtcs(dtcs);
+      _setStatus('engine ECU read');
+    } catch (e) {
+      say('ERROR: $e');
+      _setStatus('Error', error: true);
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
   void _sayDtcs(List<Dtc> dtcs) {
     if (dtcs.isEmpty) {
       say('   no DTCs stored');
@@ -232,6 +287,7 @@ class Session extends ChangeNotifier {
 
   Future<void> readAllDtcs() async {
     if (!_guard()) return;
+    if (legacyMode) return _legacyScan();
     if (modules.isEmpty) {
       _setStatus('Run Vehicle first', error: true);
       return;
@@ -265,6 +321,12 @@ class Session extends ChangeNotifier {
   Future<Map<String, String>> dtcDetail(Module m, Dtc d) async {
     final out = <String, String>{};
     if (!connected) return {'error': 'not connected'};
+    if (legacyMode) {
+      return {
+        'note': 'Generic OBD-II has no per-code snapshot / extended data '
+            '(UDS 19 04 / 19 06). Freeze frame (Mode 02) is not implemented.'
+      };
+    }
     busy = true;
     notifyListeners();
     try {
@@ -315,6 +377,7 @@ class Session extends ChangeNotifier {
     clearOutput();
     say('Clear codes on [${m.address}] ${m.displayName}');
     try {
+      if (legacyMode) return await _legacyClear(m);
       final r = await clearModule(_elm!, _uds!, m,
           allowPowertrain: allowPowertrain, onLine: say);
       if (r.error != null) {
@@ -339,6 +402,36 @@ class Session extends ChangeNotifier {
     }
   }
 
+  /// Legacy bus: Mode 04 clears emission DTCs + freeze frame on the engine
+  /// ECU (and anything else listening on the K-line). Then re-read.
+  Future<ClearResult?> _legacyClear(Module m) async {
+    final lg = _legacy!;
+    say('Mode 04 ClearDiagnosticInformation (generic OBD-II)');
+    final ok = await lg.clear();
+    say(ok ? 'Clear: POSITIVE (0x44)' : 'no 0x44 seen - verifying by re-read');
+    await Future<void>.delayed(const Duration(milliseconds: 800));
+    final after = await lg.readDtcs();
+    say('DTCs after clear:');
+    _sayDtcs(after);
+    final still = after.any((d) => d.testFailed);
+    final idx = modules.indexOf(m);
+    if (idx >= 0) modules[idx] = m.copyWith(dtcs: after);
+    if (!ok && after.isNotEmpty) {
+      _setStatus('Clear failed', error: true);
+    } else if (still) {
+      _setStatus('Cleared, but fault still present', error: true);
+    } else {
+      _setStatus('Codes cleared');
+    }
+    return ClearResult(
+      positive: ok || after.isEmpty,
+      explicit54: ok,
+      dtcsAfter: after,
+      lines: const [],
+      error: ok || after.isEmpty ? null : 'no 0x44 response',
+    );
+  }
+
   // ---- Dashboard (Mode 01 live data) -------------------------------------
 
   ObdLive? _live;
@@ -354,7 +447,7 @@ class Session extends ChangeNotifier {
     notifyListeners();
     try {
       _live = ObdLive(_elm!, _uds!);
-      await _live!.prepare();
+      if (!legacyMode) await _live!.prepare(); // legacy: no CAN target to set
     } catch (e) {
       say('live data: $e');
       liveRunning = false;
