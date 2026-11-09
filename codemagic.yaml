@@ -63,14 +63,17 @@ workflows:
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           keychain add-certificates
           xcode-project use-profiles
-      - name: Install pods
+      - name: Install pods (CocoaPods projects only)
         script: |
-          # Newer Flutter no longer writes ios/Podfile at `flutter create`; the
-          # tool generates it during an iOS build. --config-only does exactly
-          # that (and the Generated.xcconfig) without compiling.
-          flutter build ios --config-only --no-codesign
-          cd ios
-          pod install --repo-update
+          # Flutter stable now generates new iOS projects with Swift Package
+          # Manager instead of CocoaPods, so there is no Podfile and nothing to
+          # install - `flutter build ipa` resolves packages itself. Older
+          # toolchains still produce a Podfile; handle both.
+          if [ -f ios/Podfile ]; then
+            cd ios && pod install --repo-update
+          else
+            echo "No ios/Podfile (Swift Package Manager project) - skipping pod install"
+          fi
       - name: flutter build ipa
         script: |
           # PROJECT_BUILD_NUMBER is Codemagic's monotonically increasing counter.
