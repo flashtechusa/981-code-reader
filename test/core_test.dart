@@ -39,6 +39,10 @@ Future<(Elm327, Uds, MockTransport)> connectFake() async {
 }
 
 void main() {
+  _unitsTests();
+  _makeAgnosticTests();
+  _legacyTests();
+
   group('fake adapter (ported Python test)', () {
     test('TesterPresent answers 7E 00', () async {
       final (_, uds, _) = await connectFake();
