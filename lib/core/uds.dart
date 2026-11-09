@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'elm327.dart';
+import 'dtc_table.dart';
 import 'hex.dart';
 
 // ---------------------------------------------------------------------------
@@ -52,11 +53,17 @@ const Map<int, String> nrcNames = {
 
 /// Data identifiers that are harmless to read and help label a module.
 const Map<int, String> identDids = {
+  // VW / Porsche style
   0xF187: 'spare part number',
   0xF191: 'ECU hardware number',
   0xF197: 'system name',
   0xF189: 'software version',
   0xF19E: 'ODX / ASAM file',
+  // ISO 14229 standard + Ford style (Ford does not answer the F187/F197 set)
+  0xF190: 'VIN',
+  0xF111: 'core part number',
+  0xF188: 'software part number',
+  0xF18C: 'serial number',
 };
 
 /// 11-bit IDs we never clear on, and skip in the default scan.
@@ -97,6 +104,12 @@ class Dtc {
 
   bool get testFailed => (status & 0x01) != 0;
   bool get isBodyCode => (bytes[0] >> 6) == 2;
+
+  /// "P0301" - the SAE code without the failure-type suffix.
+  String get saeBase => sae.substring(0, 5);
+
+  /// SAE J2012 generic text, or null for manufacturer-specific codes.
+  String? get description => dtcDescription(saeBase);
 
   @override
   String toString() => '$raw ($sae) 0x${hexN(status, 2)} $statusNames';
@@ -294,14 +307,29 @@ class Uds {
 
 final RegExp _porschePartRe = RegExp(r'9\d[0-9A-Z][\s.]?618[\s.]?\d{3}');
 
+/// Ford restraints control modules carry the service base number 14B321
+/// (e.g. "FL3T-14B321-AB").
+final RegExp _fordRcmPartRe = RegExp(r'14B321');
+final RegExp _abbrRe = RegExp(r'\b(RCM|SDM|ORC|ACU)\b');
+
+/// Generic SAE J2012 description for a 5-character code such as "P0301".
+/// Returns null for manufacturer-specific codes.
+String? dtcDescription(String saeBase) => saeDtcText[saeBase.toUpperCase()];
+
 /// Heuristic, identical to the Python `looks_like_airbag`.
 bool looksLikeAirbag(Map<String, String> info, List<Dtc> dtcs) {
   final text = info.values.join(' ').toUpperCase();
+  // Porsche/VW: AIRBAG, POSIP. Generic: SRS, RESTRAINT. Ford: RCM.
+  // GM: SDM (Sensing & Diagnostic Module). Chrysler: ORC (Occupant Restraint
+  // Controller). Whole-word match for the short ones so "ACM" (Ford audio) etc.
+  // cannot match.
   for (final k in const ['AIRBAG', 'POSIP', 'SRS', 'RESTRAINT']) {
     if (text.contains(k)) return true;
   }
+  if (_abbrRe.hasMatch(text)) return true;
   // Porsche airbag control units carry part numbers in the 9xx 618 xxx xx family.
   if (_porschePartRe.hasMatch(text)) return true;
+  if (_fordRcmPartRe.hasMatch(text)) return true;
   // Body (B) codes freshly failed this cycle is the pattern an unplugged squib produces.
   return dtcs.any((d) => d.isBodyCode && d.testFailed);
 }

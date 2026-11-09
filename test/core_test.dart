@@ -9,6 +9,7 @@ import 'package:boxster_srs/core/scanner.dart';
 import 'package:boxster_srs/core/transport.dart';
 import 'package:boxster_srs/core/uds.dart';
 import 'package:boxster_srs/core/units.dart';
+import 'package:boxster_srs/core/known_modules.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The fake adapter from the Python test, ported verbatim.
@@ -442,6 +443,70 @@ void _unitsTests() {
       expect(unitSystemFromString(null), UnitSystem.us);
       expect(unitSystemFromString('metric'), UnitSystem.metric);
       expect(unitSystemToString(UnitSystem.metric), 'metric');
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Make-agnostic labelling: SAE DTC text, known addresses, airbag recognition
+// ---------------------------------------------------------------------------
+void _makeAgnosticTests() {
+  group('SAE DTC dictionary', () {
+    test('generic codes resolve', () {
+      expect(dtcDescription('P0301'), 'Cylinder 1 Misfire Detected');
+      expect(dtcDescription('U0100'), startsWith('Lost Communication With ECM/PCM'));
+      expect(dtcDescription('p0420'), isNotNull);
+    });
+    test('manufacturer codes do not', () {
+      expect(dtcDescription('P1000'), isNull);
+      expect(dtcDescription('B0001'), isNull);
+    });
+    test('Dtc.description uses the 5-char base', () {
+      final d = Dtc(Uint8List.fromList([0x03, 0x01, 0x04]), 0x2F); // P0301-04
+      expect(d.sae, 'P0301-04');
+      expect(d.saeBase, 'P0301');
+      expect(d.description, 'Cylinder 1 Misfire Detected');
+    });
+  });
+
+  group('known module addresses', () {
+    test('Ford RCM at 0x737 is airbag, BCM at 0x726 is not', () {
+      expect(knownModule11(0x737)!.airbag, isTrue);
+      expect(knownModule11(0x726)!.airbag, isFalse);
+      expect(knownModule11(0x7D0)!.abbr, 'APIM');
+      expect(knownModule11(0x7A0), isNull);
+    });
+    test('module with no identification falls back to the address label', () {
+      final m = Module(bits: 11, reqId: 0x726, respId: 0x72E);
+      expect(m.displayName, startsWith('BCM'));
+      expect(m.displayHint, contains('Ford'));
+      expect(m.isAirbag, isFalse);
+    });
+    test('unidentified module at a known airbag address is flagged by address', () {
+      final m = Module(bits: 11, reqId: 0x737, respId: 0x73F);
+      expect(m.isAirbag, isTrue);
+      expect(m.airbagByAddressOnly, isTrue);
+    });
+    test('identified non-airbag module at 0x737 is NOT flagged', () {
+      final m = Module(
+          bits: 11, reqId: 0x737, respId: 0x73F, info: {'system name': 'GATEWAY'});
+      expect(m.isAirbag, isFalse);
+    });
+    test('29-bit modules get no address hint', () {
+      expect(Module(bits: 29, reqId: 0x18DA37F1, respId: 0x18DAF137).known, isNull);
+    });
+  });
+
+  group('airbag recognition across makes', () {
+    test('Ford part number base 14B321', () {
+      expect(looksLikeAirbag({'core part number': 'FL3T-14B321-AB'}, []), isTrue);
+    });
+    test('abbreviations are whole-word', () {
+      expect(looksLikeAirbag({'system name': 'RCM'}, []), isTrue);
+      expect(looksLikeAirbag({'system name': 'SDM'}, []), isTrue);
+      expect(looksLikeAirbag({'system name': 'ORC'}, []), isTrue);
+      expect(looksLikeAirbag({'system name': 'ACM audio'}, []), isFalse);
+      expect(looksLikeAirbag({'system name': 'FORCMODULE'}, []), isFalse);
     });
   });
 }

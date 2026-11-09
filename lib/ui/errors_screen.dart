@@ -148,6 +148,18 @@ class _DtcDetailSheetState extends State<_DtcDetailSheet> {
             Text('${d.sae}   ${d.raw}',
                 style: monoStyle.copyWith(
                     fontSize: 18, fontWeight: FontWeight.w700)),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, bottom: 2),
+              child: Text(
+                d.description ??
+                    'Manufacturer-specific code - not in the SAE generic table',
+                style: TextStyle(
+                    fontSize: 14,
+                    color: d.description == null
+                        ? AppColors.textDim
+                        : AppColors.text),
+              ),
+            ),
             Text(
               'module ${widget.module.address}  ${widget.module.displayName}',
               style: const TextStyle(color: AppColors.textDim),

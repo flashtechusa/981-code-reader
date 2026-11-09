@@ -42,7 +42,7 @@ class Scanner {
 
     // ---- 11-bit ---------------------------------------------------------
     await elm.setBits(11);
-    await elm.setTimeoutMs(60);
+    await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
     final candidates11 = <int>[];
     for (var rid = 0x700; rid < 0x800; rid++) {
       if (rid == functional11 || isResponse11(rid)) continue;
@@ -78,7 +78,7 @@ class Scanner {
     // ---- 29-bit normal fixed (tester = 0xF1) ----------------------------
     if (!_cancel) {
       await elm.setBits(29);
-      await elm.setTimeoutMs(60);
+      await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
       for (var ta = 0x00; ta < 0x100; ta++) {
         if (_cancel) break;
         step++;

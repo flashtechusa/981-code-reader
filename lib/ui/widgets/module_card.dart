@@ -51,7 +51,9 @@ class ModuleCard extends StatelessWidget {
                       color: AppColors.textDim, fontSize: 12),
                 ),
                 const Spacer(),
-                if (m.isAirbag) _badge('AIRBAG / POSIP', AppColors.badge),
+                if (m.isAirbag)
+                  _badge(m.airbagByAddressOnly ? 'AIRBAG (addr)' : 'AIRBAG / POSIP',
+                      AppColors.badge),
                 if (m.isPowertrain) _badge('POWERTRAIN', AppColors.accent),
               ],
             ),
@@ -61,6 +63,10 @@ class ModuleCard extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w600),
             ),
+            if (m.displayHint != null)
+              Text(m.displayHint!,
+                  style: const TextStyle(
+                      color: AppColors.textDim, fontSize: 11)),
             if (m.partNumber.isNotEmpty && m.systemName.isNotEmpty)
               Text('Part no. ${m.partNumber}',
                   style: monoStyle.copyWith(color: AppColors.textDim)),
@@ -148,6 +154,14 @@ class _DtcRow extends StatelessWidget {
                     '${dtc.sae}   ${dtc.raw}',
                     style: monoStyle.copyWith(
                         fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    dtc.description ?? 'Manufacturer-specific code',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: dtc.description == null
+                            ? AppColors.textDim
+                            : AppColors.text),
                   ),
                   Text(
                     'status 0x${dtc.status.toRadixString(16).toUpperCase().padLeft(2, '0')}  ${dtc.statusNames}',
