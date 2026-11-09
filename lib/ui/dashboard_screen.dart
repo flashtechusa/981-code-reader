@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app/session.dart';
+import '../app/settings.dart';
 import '../core/obd_pids.dart';
 import 'theme.dart';
 
@@ -130,6 +131,7 @@ class _Gauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final units = context.watch<Settings>().units;
     final v = value;
     final frac = v == null
         ? 0.0
@@ -154,7 +156,7 @@ class _Gauge extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    v == null ? '--' : _fmt(pid, v),
+                    v == null ? '--' : units.format(pid, v),
                     style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
@@ -164,27 +166,11 @@ class _Gauge extends StatelessWidget {
               ),
             ),
           ),
-          Text(pid.unit,
+          Text(units.label(pid),
               style: const TextStyle(color: AppColors.textDim, fontSize: 12)),
         ],
       ),
     );
-  }
-}
-
-String _fmt(ObdPid pid, double v) {
-  switch (pid.pid) {
-    case 0x42:
-      return v.toStringAsFixed(2);
-    case 0x06:
-    case 0x07:
-    case 0x08:
-    case 0x09:
-    case 0x04:
-    case 0x11:
-      return v.toStringAsFixed(1);
-    default:
-      return v.round().toString();
   }
 }
 
@@ -231,6 +217,7 @@ class _TableView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = session;
+    final units = context.watch<Settings>().units;
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
@@ -247,7 +234,7 @@ class _TableView extends StatelessWidget {
               child: Text(
                 s.latest[p.pid] == null
                     ? '--'
-                    : '${_fmt(p, s.latest[p.pid]!)} ${p.unit}',
+                    : '${units.format(p, s.latest[p.pid]!)} ${units.label(p)}',
                 textAlign: TextAlign.right,
                 style: monoStyle.copyWith(
                     fontSize: 14, fontWeight: FontWeight.w700),
@@ -397,7 +384,7 @@ class _GraphView extends StatelessWidget {
                   label: Text(
                     session.latest[p.pid] == null
                         ? p.shortName
-                        : '${p.shortName} ${_fmt(p, session.latest[p.pid]!)}',
+                        : '${p.shortName} ${context.watch<Settings>().units.format(p, session.latest[p.pid]!)}',
                     style: const TextStyle(fontSize: 12),
                   ),
                   avatar: CircleAvatar(

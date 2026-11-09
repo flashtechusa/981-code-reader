@@ -64,3 +64,10 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
   experimental APIs. State is `ChangeNotifier` + `provider`; do not add a
   bigger state framework.
 * `flutter analyze` and `flutter test` must stay green (warnings are fatal; infos such as `prefer_const_constructors` are not).
+
+## Units
+
+ECU values are decoded in SI (km/h, °C) and stay SI everywhere in `lib/core/`
+and in tests. Display conversion happens only in the UI via
+`Settings.units` (`lib/core/units.dart`): default is US (mph, °F); Metric is
+selectable in the settings sheet. Never convert inside `obd_pids.dart`.

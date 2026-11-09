@@ -8,6 +8,7 @@ import 'package:boxster_srs/core/obd_pids.dart';
 import 'package:boxster_srs/core/scanner.dart';
 import 'package:boxster_srs/core/transport.dart';
 import 'package:boxster_srs/core/uds.dart';
+import 'package:boxster_srs/core/units.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The fake adapter from the Python test, ported verbatim.
@@ -402,6 +403,45 @@ void main() {
       expect(rpm!, inInclusiveRange(700, 950));
       final v = await live.read(pidByNumber(0x42)!);
       expect(v!, inInclusiveRange(13.5, 14.5));
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Units (display conversion; raw values stay SI)
+// ---------------------------------------------------------------------------
+void _unitsTests() {
+  group('Units', () {
+    final speed = pidByNumber(0x0D)!;
+    final coolant = pidByNumber(0x05)!;
+    final rpm = pidByNumber(0x0C)!;
+
+    test('US converts km/h -> mph and °C -> °F', () {
+      const u = Units(UnitSystem.us);
+      expect(u.convert(speed, 100), closeTo(62.137, 0.01));
+      expect(u.label(speed), 'mph');
+      expect(u.convert(coolant, 100), 212);
+      expect(u.label(coolant), '°F');
+      expect(u.format(coolant, 102), '216');
+    });
+
+    test('metric leaves values alone', () {
+      const u = Units(UnitSystem.metric);
+      expect(u.convert(speed, 100), 100);
+      expect(u.label(speed), 'km/h');
+      expect(u.label(coolant), '°C');
+    });
+
+    test('non-dimensional PIDs are never converted', () {
+      const u = Units(UnitSystem.us);
+      expect(u.convert(rpm, 1325), 1325);
+      expect(u.label(rpm), 'rpm');
+    });
+
+    test('string round trip, default US', () {
+      expect(unitSystemFromString(null), UnitSystem.us);
+      expect(unitSystemFromString('metric'), UnitSystem.metric);
+      expect(unitSystemToString(UnitSystem.metric), 'metric');
     });
   });
 }

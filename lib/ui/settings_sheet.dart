@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app/settings.dart';
+import '../core/units.dart';
 import 'theme.dart';
 
 Future<void> showSettingsSheet(BuildContext context) {
@@ -23,6 +24,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late final TextEditingController _host;
   late final TextEditingController _port;
   late bool _powertrain;
+  late UnitSystem _units;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _host = TextEditingController(text: s.host);
     _port = TextEditingController(text: s.port.toString());
     _powertrain = s.includePowertrain;
+    _units = s.unitSystem;
   }
 
   @override
@@ -47,6 +50,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
       host: _host.text,
       port: port,
       includePowertrain: _powertrain,
+      unitSystem: _units,
     );
     if (mounted) Navigator.of(context).pop();
   }
@@ -89,6 +93,26 @@ class _SettingsSheetState extends State<_SettingsSheet> {
           const Text(
             'bbfly / ELM327 Wi-Fi default is 192.168.0.10 : 35000',
             style: TextStyle(color: AppColors.textDim, fontSize: 12),
+          ),
+          const SizedBox(height: 14),
+          const Text('Units', style: TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<UnitSystem>(
+              segments: const [
+                ButtonSegment(
+                  value: UnitSystem.us,
+                  label: Text('US  (mph, °F)'),
+                ),
+                ButtonSegment(
+                  value: UnitSystem.metric,
+                  label: Text('Metric  (km/h, °C)'),
+                ),
+              ],
+              selected: {_units},
+              onSelectionChanged: (sel) => setState(() => _units = sel.first),
+            ),
           ),
           const SizedBox(height: 8),
           SwitchListTile(
