@@ -73,7 +73,7 @@ lib/
     session.dart      ChangeNotifier: connect/disconnect, scan, scanMs, readAllDtcs, dtcDetail, clearSrs/clearModuleCodes, live data, log, adapterBus tracking
     settings.dart     persisted settings (shared_preferences)
   ui/                 screens + widgets (FORScan-Lite dark theme)
-test/core_test.dart   ~45 tests: fake adapter, ISO-TP, allow-list refusals, DTC decode, units, labelling, legacy parsing
+test/core_test.dart   59 tests: fake adapter, ISO-TP, allow-list refusals, DTC decode, units, labelling, legacy parsing
 tool/
   patch_ios.sh        PlistBuddy/pbxproj patches applied after `flutter create` in CI
   gen_dtc_table.py    regenerates dtc_table.dart from python-OBD
@@ -87,7 +87,7 @@ Dependencies: provider, shared_preferences, fl_chart, share_plus ^10.1, path_pro
 
 ## 6. Build & release
 
-- **Codemagic workflows** (`codemagic.yaml`): `test-only` (analyze + test, on every push) and `ios-testflight` (manual: analyze → test → script-based signing via `app-store-connect fetch-signing-files --create` → `flutter build ipa` → upload to TestFlight, no beta-review submission).
+- **Codemagic workflows** (`codemagic.yaml`): `test-only` (analyze + test, on every push) and `ios-testflight` (on `v*` tags, or started manually: analyze → test → script-based signing via `app-store-connect fetch-signing-files --create` → `flutter build ipa` → upload to TestFlight, no beta-review submission).
 - `flutter analyze --no-fatal-infos` (warnings fatal, style infos not).
 - Codemagic env: App Store Connect integration named **"ColorChase"** (an existing key on the account, works for all apps); environment group `code-signing` with secret `CERTIFICATE_PRIVATE_KEY` (RSA PEM).
 - iOS: iPhone only, portrait, iOS 15+, `UIRequiresFullScreen`, `NSLocalNetworkUsageDescription`, `UIRequiresPersistentWiFi`.
@@ -101,6 +101,7 @@ Dependencies: provider, shared_preferences, fl_chart, share_plus ^10.1, path_pro
 3. **Maserati:** try "K-line legacy" bus mode — adapter must have K-line hardware (most v1.5 clones do). First connect takes ~15–20 s. Engine codes/clear/live data only. Clutch wear / PIS is handled by the ThinkDiag 2 (Launch) on order, not this app.
 4. **Android:** `flutter create` includes `android` so it should build; never tried. Would need `android/` plumbing for Wi-Fi local network and a Codemagic Android workflow.
 5. **Nice-to-haves discussed, not built:** freeze frame (Mode 02) in legacy mode; richer per-make module tables built *from what the cars themselves report* (which DIDs answer) rather than any external database; Porsche-specific airbag B-code text once the real code is seen on the car.
+6. **Known caveat — airbag flag can over-match (fails safe).** `looksLikeAirbag` (identical to the Python) flags any module at an *unknown* address that has an actively failing B-code, even when its identification names it as something else. On the 981 with the seat plug out, a second body module with a live B-code would also be flagged → two flagged → the Clear SRS tile stays disabled. Workaround on the car: Errors → the POSIP module's own "Clear codes" button (same clear sequence, same typed CLEAR). The same applies after a Ford MS-CAN scan (MS body modules at unlisted addresses with active B-codes). Also, `Module.known` for an MS module falls back to the HS table, so an MS responder at 0x737 would be labelled RCM. Clear SRS does not filter to HS modules; it prompts a switch flip instead. Not changed: the heuristic must stay identical to the Python reference until the real car shows what it needs.
 
 ## 8. Working agreements for the next AI
 

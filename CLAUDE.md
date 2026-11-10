@@ -81,8 +81,10 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
   `bash tool/patch_ios.sh`. Committed `ios/Runner/Info.plist` already has
   `NSLocalNetworkUsageDescription`, `UIRequiresPersistentWiFi`, portrait only.
 * Bundle id `com.flashtech.boxstersrs`. Codemagic: `codemagic.yaml`
-  (`test-only` on push, `ios-testflight` on `v*` tags, App Store Connect
-  integration named "App Store Connect", automatic signing, nothing committed).
+  (`test-only` on push, `ios-testflight` on `v*` tags or started manually, App
+  Store Connect integration named "ColorChase", script-based signing via
+  `app-store-connect fetch-signing-files --create` using the secret
+  `CERTIFICATE_PRIVATE_KEY` from env group `code-signing`; nothing committed).
 * Simulator: `flutter run --dart-define=MOCK=true` (scripted adapter in
   `lib/core/mock_adapter.dart`).
 * Keep Dart conservative: Flutter 3.x stable, Dart 3, null-safe, no

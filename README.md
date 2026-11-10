@@ -108,15 +108,18 @@ flutter run --dart-define=MOCK=true
 
 * **test-only** - on every push / PR: `flutter pub get`, `flutter analyze`,
   `flutter test`.
-* **ios-testflight** - on tags `v*`: generates the platform folders, patches iOS,
-  analyze + test, automatic signing through the Codemagic App Store Connect
-  integration named **"App Store Connect"** (distribution type `app_store`, bundle
-  id `com.flashtech.boxstersrs`), `flutter build ipa --release`, upload to
-  TestFlight. No certificates or profiles are committed.
+* **ios-testflight** - on tags `v*` (or started manually in Codemagic): generates
+  the platform folders, patches iOS, analyze + test, script-based signing
+  (`app-store-connect fetch-signing-files com.flashtech.boxstersrs --type
+  IOS_APP_STORE --create`), `flutter build ipa --release`, upload to TestFlight
+  (internal testers, no beta-review submission). No certificates or profiles are
+  committed.
 
-Setup once in Codemagic: add the App Store Connect API key integration with that
-exact name, and make sure the bundle id exists in the Apple Developer portal (the
-`--create` flag in the signing step registers the profile if missing).
+Setup once in Codemagic: an App Store Connect API key integration named
+**"ColorChase"** (the name `codemagic.yaml` references), and an environment group
+`code-signing` holding `CERTIFICATE_PRIVATE_KEY` (RSA private key, PEM, marked
+Secret). `--create` registers the bundle id, distribution certificate and App
+Store profile if they are missing; the App Store Connect app record must exist.
 
 ## Safety
 
