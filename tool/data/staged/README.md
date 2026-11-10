@@ -4,8 +4,7 @@ Nothing in this folder is read by the app: it is not in `pubspec.yaml` assets
 and no Dart file imports it. These are candidates waiting for review. The app's
 active tables are unchanged: `lib/core/dtc_table.dart` (2,066 SAE codes),
 `lib/core/ford_dtc_table.dart` (Tony's Ford list) and
-`lib/core/verified_generic_dtc.dart` (verified generic additions; empty until
-an entry passes the bar below).
+`lib/core/verified_generic_dtc.dart` (verified generic additions).
 
 ## Files
 
@@ -13,7 +12,7 @@ an entry passes the bar below).
 |---|---|---|---|
 | `dtc_database_generic_additions.csv` | 7,275 | Wal33D/dtc-database @ 04c43d7, `dtc_codes.db` sha256 `099a4ffd…b743` | `python3 tool/stage_dtc_database.py dtc_codes.db` |
 | `reserved_replacements_review.csv` | 41 | same | same |
-| `porsche_dme_pcodes.csv` | 647 (364 codes) | "Porsche DTC P-Codes.doc" PDF export (2007/2013) | `pdftotext -layout tec_dtc_pcodes.pdf x.txt && python3 tool/stage_porsche_pdf.py x.txt` |
+| `porsche_dme_pcodes.csv` | 647 rows (364 distinct codes) | "Porsche DTC P-Codes.doc" PDF export (2007/2013) | `pdftotext -layout tec_dtc_pcodes.pdf x.txt && python3 tool/stage_porsche_pdf.py x.txt` |
 
 ## Why these are not bundled
 
@@ -35,6 +34,14 @@ copyright or source line. It covers DME 5.2.2, 7.2 and 7.8 only (986/996 and
 in different DME versions (178 of 364 codes), so it can only ever apply keyed
 by DME version, which the app would read from the module's identification.
 
+## Verified entries (2026-11-10)
+
+Two base-code descriptions were added to `lib/core/verified_generic_dtc.dart`:
+B0001 is supported by the NHTSA-hosted Jaguar/Land Rover TOPIx SSM71832
+bulletin, and U0074 by the 2011 Saab 9-4X Workshop Information System code
+list. U0074 is the one verified replacement among the 41 staged "Reserved"
+rows; the other 40 remain unverified.
+
 ## Bar for moving an entry into the app
 
 1. A primary source the reviewer has actually read (OEM service information,
@@ -44,7 +51,6 @@ by DME version, which the app would read from the module's identification.
 3. For the "Reserved" replacements: `pattern_check` must not say ANOMALOUS
    unless the primary source settles it.
 
-Candidate primary sources found but not reachable from the build session (its
-network blocks these hosts): NHTSA PE21-010 appendix (`static.nhtsa.gov`,
-lists Ford RCM B0001 "Driver Frontal Stage 1 Deployment Control"), Saab/GM WIS
-"Control Module U Code List" (`saabwisonline.com`).
+Sources reviewed: NHTSA-hosted Jaguar/Land Rover TOPIx SSM71832 for B0001 and
+Saab 9-4X WIS (2011) for U0074. The B0001 source documents its subtype forms
+(B0001:11/:12/:1A/:1B) and the common base descriptor.
