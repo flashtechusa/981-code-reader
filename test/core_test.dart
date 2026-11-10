@@ -675,8 +675,11 @@ void _fordCodeTextTests() {
     });
     test('B0001: no silent pick of the Ford "ECU internal fault" entry', () {
       // B0001 is an SAE generic-range code. Tony's list has two meanings;
-      // the most frequent one must not be presented as THE meaning.
-      final t = describeDtcCode('B0001', ford: FordTextLevel.confirmed);
+      // without a verified generic entry the most frequent one must not be
+      // presented as THE meaning. Pass an empty verified table so this checks
+      // the Ford-list fallback, whatever the shipped table contains.
+      final t = describeDtcCode('B0001',
+          ford: FordTextLevel.confirmed, verified: const {});
       expect(isManufacturerRange('B0001'), isFalse);
       expect(t.source, DtcTextSource.ford);
       expect(t.definitive, isFalse);
@@ -693,6 +696,14 @@ void _fordCodeTextTests() {
       expect(t.source, DtcTextSource.verifiedGeneric);
       expect(t.headline, 'Driver Frontal Stage 1 Deployment Control');
       expect(t.meanings, hasLength(1)); // Ford meanings not mixed in
+    });
+    test('B0001: the shipped app shows the verified generic text', () {
+      expect(verifiedGenericDtcText['B0001'],
+          'Driver Frontal Stage 1 Deployment Control');
+      final t = describeDtcCode('B0001', ford: FordTextLevel.confirmed);
+      expect(t.source, DtcTextSource.verifiedGeneric);
+      expect(t.headline, 'Driver Frontal Stage 1 Deployment Control');
+      expect(t.summary, isNot('ECU internal fault'));
     });
     test('verified entry replaces a stale SAE "Reserved" entry', () {
       expect(dtcDescription('U0074'), startsWith('Reserved'));
