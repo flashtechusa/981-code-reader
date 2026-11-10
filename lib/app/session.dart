@@ -45,6 +45,28 @@ class Session extends ChangeNotifier {
 
   /// True while connected to a pre-CAN car in legacy OBD-II mode.
   bool get legacyMode => _legacy != null;
+
+  /// Which way the adapter's physical HS/MS switch is believed to be set.
+  /// Updated only when the user confirms a flip in the UI.
+  CanBus adapterBus = CanBus.hs;
+
+  /// True when an HS scan has finished and MS-CAN has not been scanned yet.
+  bool msScanOffered = false;
+
+  void setAdapterBus(CanBus b) {
+    adapterBus = b;
+    notifyListeners();
+  }
+
+  /// A module on the other bus than the switch is set to cannot be reached.
+  bool _busMismatch(Module m) {
+    if (legacyMode || m.bus == adapterBus) return false;
+    final want = m.bus == CanBus.ms ? 'MS-CAN' : 'HS-CAN';
+    say('[${m.address}] is on ${m.bus == CanBus.ms ? 'MS' : 'HS'}-CAN - '
+        'flip the adapter switch to $want first, then confirm in the app.');
+    _setStatus('Flip switch to $want', error: true);
+    return true;
+  }
   String legacyProtocol = '';
 
   Elm327? get elm => _elm;
@@ -207,6 +229,8 @@ class Session extends ChangeNotifier {
           includePowertrain: settings.includePowertrain)) {
         if (p.phase == 'done') {
           found.addAll(p.found ?? const []);
+        } else if (p.phase == 'identified') {
+          say(p.message);
         } else if (p.message.contains('answered')) {
           say('  ${p.message}');
         }
@@ -215,19 +239,50 @@ class Session extends ChangeNotifier {
       modules
         ..clear()
         ..addAll(found);
-      say('');
-      for (final m in found) {
-        say('[${m.address}]${m.isAirbag ? '  <== AIRBAG / POSIP' : ''}');
-        for (final e in m.info.entries) {
-          say('   ${e.key}: ${e.value}');
-        }
-        if (m.note != null) say('   note: ${m.note}');
-        _sayDtcs(m.dtcs);
-      }
       if (found.isEmpty) {
         say('Nothing answered. Ignition on? Switch on HS-CAN?');
       }
-      _setStatus('${found.length} module(s) found');
+      msScanOffered = settings.hasMsSwitch && !legacyMode;
+      _setStatus('${found.length} module(s) found on HS-CAN');
+    } catch (e) {
+      say('ERROR: $e');
+      _setStatus('Error', error: true);
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
+  /// Second half of a Ford-style scan: the user has flipped the adapter to
+  /// MS-CAN (pins 3/11, 125 kbps). Appends MS modules to the list; the
+  /// switch must be flipped back before HS modules are touched again.
+  Future<void> scanMs() async {
+    if (!_guard()) return;
+    busy = true;
+    msScanOffered = false;
+    adapterBus = CanBus.ms;
+    stopLive();
+    say('');
+    say('Scanning MS-CAN (125 kbps, read-only) ...');
+    try {
+      final found = <Module>[];
+      await for (final p
+          in _scanner!.run(includePowertrain: true, bus: CanBus.ms)) {
+        if (p.phase == 'done') {
+          found.addAll(p.found ?? const []);
+        } else if (p.phase == 'identified') {
+          say(p.message);
+        } else if (p.message.contains('answered')) {
+          say('  ${p.message}');
+        }
+        _setStatus(p.message);
+      }
+      modules.addAll(found);
+      if (found.isEmpty) {
+        say('Nothing answered on MS-CAN. Is the switch on MS? Not all cars '
+            'have a second bus (the Porsche does not).');
+      }
+      _setStatus('${found.length} MS-CAN module(s); ${modules.length} total');
     } catch (e) {
       say('ERROR: $e');
       _setStatus('Error', error: true);
@@ -297,7 +352,12 @@ class Session extends ChangeNotifier {
     clearOutput();
     try {
       await _elm!.setTimeoutMs(400);
+      var skipped = 0;
       for (final m in modules) {
+        if (m.bus != adapterBus) {
+          skipped++;
+          continue;
+        }
         _setStatus('reading ${m.address}');
         await _scanner!.refreshModule(m, identify: false);
         say('[${m.address}] ${m.displayName}${m.isAirbag ? '  (AIRBAG)' : ''}');
@@ -306,6 +366,10 @@ class Session extends ChangeNotifier {
           continue;
         }
         _sayDtcs(m.dtcs);
+      }
+      if (skipped > 0) {
+        say('$skipped module(s) on the other CAN bus not re-read - flip the '
+            'adapter switch and confirm to read those.');
       }
       _setStatus('DTC read complete');
     } catch (e) {
@@ -327,9 +391,11 @@ class Session extends ChangeNotifier {
             '(UDS 19 04 / 19 06). Freeze frame (Mode 02) is not implemented.'
       };
     }
+    if (_busMismatch(m)) return {'error': status};
     busy = true;
     notifyListeners();
     try {
+      _elm!.bus = m.bus;
       await _elm!.setBits(m.bits);
       await _elm!.setTimeoutMs(400);
       await _elm!.setTarget(m.reqId, resp: m.respId);
@@ -372,9 +438,13 @@ class Session extends ChangeNotifier {
 
   Future<ClearResult?> _clear(Module m, {required bool allowPowertrain}) async {
     if (!_guard()) return null;
+    clearOutput();
+    if (_busMismatch(m)) {
+      notifyListeners();
+      return null;
+    }
     busy = true;
     stopLive();
-    clearOutput();
     say('Clear codes on [${m.address}] ${m.displayName}');
     try {
       if (legacyMode) return await _legacyClear(m);
@@ -440,6 +510,10 @@ class Session extends ChangeNotifier {
     if (!connected || liveRunning) return;
     if (busy) {
       _setStatus('Still working ...', error: true);
+      return;
+    }
+    if (!legacyMode && adapterBus != CanBus.hs) {
+      _setStatus('Flip switch to HS-CAN for live data', error: true);
       return;
     }
     busy = true;

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'hex.dart';
+import 'module.dart' show CanBus;
 import 'transport.dart';
 
 class ElmException implements Exception {
@@ -42,6 +43,14 @@ class Elm327 {
 
   /// Current addressing width: 11 or 29.
   int bits = 11;
+
+  /// Which CAN the adapter is configured for. HS = ISO 15765-4 500 kbps
+  /// (ATSP6/7). MS = ELM "protocol B" user CAN: 11-bit, 125 kbps
+  /// (`ATSPB` + `ATPB E0 04`: E0 = 11-bit id, fixed 8-byte DLC, ISO 15765
+  /// formatting so the adapter still sends flow control; 04 = 500/4 kbps).
+  /// The adapter's physical HS/MS switch must match - software cannot move
+  /// pins.
+  CanBus bus = CanBus.hs;
 
   /// Legacy OBD-II mode (pre-2008 cars: K-line ISO 9141-2 / KWP2000, or
   /// whatever the ELM auto-detects). The adapter then runs formatted
@@ -166,7 +175,20 @@ class Elm327 {
   Future<void> setBits(int b) async {
     if (legacy) await leaveLegacy();
     bits = b;
+    if (bus == CanBus.ms) {
+      // MS-CAN is 11-bit only on every Ford we know of.
+      bits = 11;
+      await cmd('ATPB E0 04');
+      await cmd('ATSPB');
+      return;
+    }
     await cmd(b == 11 ? 'ATSP6' : 'ATSP7');
+  }
+
+  /// Select HS or MS CAN and (re)apply the protocol for the current width.
+  Future<void> setBus(CanBus b) async {
+    bus = b;
+    await setBits(bits);
   }
 
   /// Switch to legacy OBD-II: protocol auto (`ATSP0`), formatted output,

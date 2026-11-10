@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app/session.dart';
+import '../core/module.dart';
 import 'dashboard_screen.dart';
 import 'errors_screen.dart';
 import 'log_screen.dart';
@@ -58,7 +59,67 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute<void>(builder: (_) => const VehicleScreen()),
     );
     await s.scan();
+    if (!mounted || !s.msScanOffered) return;
+    await _offerMsScan(s);
   }
+
+  /// FORScan-style second bus: ask the user to flip the adapter's HS/MS
+  /// switch, scan MS-CAN, then ask them to flip it back.
+  Future<void> _offerMsScan(Session s) async {
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Scan MS-CAN too?'),
+        content: const Text(
+          'HS-CAN scan finished.\n\n'
+          'Ford vehicles have a second bus (MS-CAN: cluster, HVAC, doors, '
+          'audio ...). To scan it:\n\n'
+          '1. Flip the switch on the adapter to MS-CAN.\n'
+          '2. Tap Scan MS-CAN.\n\n'
+          'Porsche and most other makes have no MS-CAN - tap Skip.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Skip'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Switch is on MS - scan'),
+          ),
+        ],
+      ),
+    );
+    if (go != true) {
+      s.msScanOffered = false;
+      return;
+    }
+    await s.scanMs();
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Flip the switch back to HS-CAN'),
+        content: const Text(
+          'MS-CAN scan done. Set the adapter switch back to HS-CAN now - '
+          'live data, the engine and airbag modules all live there.\n\n'
+          'MS-CAN modules stay in the list; to re-read or clear one of them '
+          'later the app will ask you to flip the switch again.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () {
+              s.setAdapterBus(CanBus.hs);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Switch is back on HS'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   void _onErrors(Session s) {
     if (!s.connected) {

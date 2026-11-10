@@ -59,6 +59,13 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
 * DTC display: `Dtc.isActive` = status & 0x0F != 0. Errors screen hides
   inactive (0x50 "test not completed") entries by default with a toggle; Ford
   modules list every supportable DTC that way.
+* Two CAN buses (`CanBus` in module.dart): HS = pins 6/14 500k (ATSP6/7);
+  MS = Ford's pins 3/11 125k = ELM protocol B (`ATPB E0 04`, `ATSPB`), 11-bit
+  only. The ELM reaches MS only via the adapter's physical switch, so
+  `Session.adapterBus` tracks the user-confirmed switch position, the home
+  screen offers an MS scan after the HS scan (`Settings.hasMsSwitch`), and
+  every per-module action goes through `ensureBusFor()` first. Live data and
+  Clear SRS are HS-only.
 * Scan second pass: known-address table re-probed with `10 01` then `3E 00`
   at 250 ms (Ford ABS/RCM/IPC/PSCM often ignore a bare TesterPresent).
 * Clear sequence (`lib/core/clear.dart`): `10 03` (fall back on refusal),

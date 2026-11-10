@@ -45,6 +45,7 @@ Future<ClearResult> clearModule(
     if (onLine != null) onLine(s);
   }
 
+  elm.bus = m.bus;
   await elm.setBits(m.bits);
   await elm.setTimeoutMs(400);
   await elm.setTarget(m.reqId, resp: m.respId);

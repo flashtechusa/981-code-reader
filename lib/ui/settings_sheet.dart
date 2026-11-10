@@ -26,6 +26,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late bool _powertrain;
   late UnitSystem _units;
   late VehicleBus _bus;
+  late bool _msSwitch;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _powertrain = s.includePowertrain;
     _units = s.unitSystem;
     _bus = s.bus;
+    _msSwitch = s.hasMsSwitch;
   }
 
   @override
@@ -54,6 +56,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
       includePowertrain: _powertrain,
       unitSystem: _units,
       bus: _bus,
+      hasMsSwitch: _msSwitch,
     );
     if (mounted) Navigator.of(context).pop();
   }
@@ -157,6 +160,16 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               'Clear SRS never touches these.',
               style: TextStyle(fontSize: 12),
             ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Adapter has HS / MS-CAN switch'),
+            subtitle: const Text(
+                'bbfly, OBDLink MX etc. After the HS scan you will be asked to '
+                'flip it so Ford MS-CAN modules (cluster, HVAC, doors) can be '
+                'scanned too.'),
+            value: _msSwitch,
+            onChanged: (v) => setState(() => _msSwitch = v),
+          ),
           ),
           const SizedBox(height: 10),
           Row(

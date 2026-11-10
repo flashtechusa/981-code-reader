@@ -36,12 +36,19 @@ class Scanner {
 
   /// Runs the scan and emits progress. The final event has phase 'done' and
   /// carries the found modules (identified, with DTCs read).
-  Stream<ScanProgress> run({bool includePowertrain = false}) async* {
+  Stream<ScanProgress> run(
+      {bool includePowertrain = false, CanBus bus = CanBus.hs}) async* {
     _cancel = false;
     final found = <Module>[];
     const probe = Duration(milliseconds: 400);
+    final ms = bus == CanBus.ms;
+    String label(int rid) {
+      final k = ms ? knownModulesMs[rid] : knownModules11[rid];
+      return k == null ? '' : '  ${k.abbr} - ${k.name}';
+    }
 
     // ---- 11-bit ---------------------------------------------------------
+    elm.bus = bus;
     await elm.setBits(11);
     await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
     final candidates11 = <int>[];
@@ -58,10 +65,11 @@ class Scanner {
       final resps = await uds.request([sidTesterPresent, 0x00], timeout: probe);
       for (final e in resps.entries) {
         if (e.value.isNotEmpty && (e.value[0] == 0x7E || e.value[0] == 0x7F)) {
-          found.add(Module(bits: 11, reqId: rid, respId: e.key));
+          found.add(Module(bits: 11, reqId: rid, respId: e.key, bus: bus));
           yield ScanProgress(
             phase: 'probe11',
-            message: '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered',
+            message:
+                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered${label(rid)}',
             fraction: 0.8 * step / total,
           );
         }
@@ -84,7 +92,7 @@ class Scanner {
     if (!_cancel) {
       await elm.setTimeoutMs(250);
       final have = found.map((m) => m.reqId).toSet();
-      for (final rid in knownModules11.keys) {
+      for (final rid in (ms ? knownModulesMs : knownModules11).keys) {
         if (_cancel) break;
         if (have.contains(rid) || rid == functional11) continue;
         if (isPowertrain11(rid) && !includePowertrain) continue;
@@ -99,11 +107,11 @@ class Scanner {
               (e.value[0] == 0x7E || e.value[0] == 0x7F));
         }
         for (final e in ok) {
-          found.add(Module(bits: 11, reqId: rid, respId: e.key));
+          found.add(Module(bits: 11, reqId: rid, respId: e.key, bus: bus));
           yield ScanProgress(
             phase: 'probe11',
             message:
-                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered (2nd pass)',
+                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered (2nd pass)${label(rid)}',
             fraction: 0.8 * step / total,
           );
           break;
@@ -113,8 +121,8 @@ class Scanner {
 
     found.sort((a, b) => a.reqId.compareTo(b.reqId));
 
-    // ---- 29-bit normal fixed (tester = 0xF1) ----------------------------
-    if (!_cancel) {
+    // ---- 29-bit normal fixed (tester = 0xF1) - HS-CAN only -------------
+    if (!_cancel && !ms) {
       await elm.setBits(29);
       await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
       for (var ta = 0x00; ta < 0x100; ta++) {
@@ -157,6 +165,14 @@ class Scanner {
         fraction: 0.8 + 0.2 * i / found.length,
       );
       await refreshModule(m);
+      yield ScanProgress(
+        phase: 'identified',
+        message:
+            '[${m.address}] ${m.displayName}${m.partNumber.isNotEmpty && m.systemName.isNotEmpty ? '  ${m.partNumber}' : ''}'
+            '${m.isAirbag ? '  <== AIRBAG' : ''}  '
+            '${m.activeDtcs.isEmpty ? 'no active faults' : '${m.activeDtcs.length} active fault(s)'}',
+        fraction: 0.8 + 0.2 * (i + 1) / found.length,
+      );
     }
 
     yield ScanProgress(
@@ -171,6 +187,7 @@ class Scanner {
 
   /// Re-reads identification + DTCs of one module (read-only).
   Future<void> refreshModule(Module m, {bool identify = true}) async {
+    elm.bus = m.bus;
     await elm.setBits(m.bits);
     await elm.setTarget(m.reqId, resp: m.respId);
     try {

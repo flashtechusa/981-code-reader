@@ -527,6 +527,23 @@ void _makeAgnosticTests() {
           bits: 11, reqId: 0x737, respId: 0x73F, info: {'system name': 'GATEWAY'});
       expect(m.isAirbag, isFalse);
     });
+    test('MS-CAN module labels and address suffix', () {
+      final m = Module(bits: 11, reqId: 0x733, respId: 0x73B, bus: CanBus.ms);
+      expect(m.address, '733 MS');
+      expect(m.displayName, startsWith('HVAC'));
+      expect(m.copyWith(dtcs: []).bus, CanBus.ms);
+    });
+    test('MS-CAN selects ELM protocol B at 125 kbps', () async {
+      final (elm, _, t) = await connectFake();
+      elm.bus = CanBus.ms;
+      await elm.setBits(29); // MS is 11-bit only
+      expect(elm.bits, 11);
+      expect(t.sent.map((x) => x.trim()).toList(),
+          containsAllInOrder(['ATPB E0 04', 'ATSPB']));
+      elm.bus = CanBus.hs;
+      await elm.setBits(11);
+      expect(t.sent.last.trim(), 'ATSP6');
+    });
     test('29-bit modules get no address hint', () {
       expect(Module(bits: 29, reqId: 0x18DA37F1, respId: 0x18DAF137).known, isNull);
     });

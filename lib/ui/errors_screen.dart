@@ -6,6 +6,7 @@ import '../core/module.dart';
 import '../core/uds.dart';
 import 'theme.dart';
 import 'widgets/confirm_clear_sheet.dart';
+import 'widgets/bus_prompt.dart';
 import 'widgets/module_card.dart';
 
 /// Re-reads DTCs for every found module and lists them grouped per module.
@@ -28,6 +29,9 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
   }
 
   Future<void> _showDetail(Module m, Dtc d) async {
+    final sess = context.read<Session>();
+    if (!await ensureBusFor(context, sess, m)) return;
+    if (!mounted) return;
     final s = context.read<Session>();
     if (s.busy) return;
     await showModalBottomSheet<void>(
@@ -40,6 +44,8 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
   Future<void> _clear(Module m) async {
     final s = context.read<Session>();
     if (s.busy) return;
+    if (!await ensureBusFor(context, s, m)) return;
+    if (!mounted) return;
     final ok = await showConfirmClearSheet(context, module: m, isSrs: m.isAirbag);
     if (!ok) return;
     final r = await s.clearModuleCodes(m);

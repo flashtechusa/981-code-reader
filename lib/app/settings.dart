@@ -20,6 +20,7 @@ class Settings extends ChangeNotifier {
   bool _includePowertrain = false;
   UnitSystem _unitSystem = UnitSystem.us; // US default: mph / °F
   VehicleBus _bus = VehicleBus.can;
+  bool _hasMsSwitch = true; // bbfly / OBDLink MX style HS/MS switch
 
   String get host => _host;
   int get port => _port;
@@ -27,6 +28,7 @@ class Settings extends ChangeNotifier {
   UnitSystem get unitSystem => _unitSystem;
   VehicleBus get bus => _bus;
   bool get legacyBus => _bus == VehicleBus.legacy;
+  bool get hasMsSwitch => _hasMsSwitch;
   Units get units => Units(_unitSystem);
 
   Future<void> load() async {
@@ -37,6 +39,7 @@ class Settings extends ChangeNotifier {
       _includePowertrain = p.getBool('includePowertrain') ?? false;
       _unitSystem = unitSystemFromString(p.getString('unitSystem'));
       _bus = p.getString('bus') == 'legacy' ? VehicleBus.legacy : VehicleBus.can;
+      _hasMsSwitch = p.getBool('hasMsSwitch') ?? true;
     } catch (_) {
       // keep defaults
     }
@@ -49,12 +52,14 @@ class Settings extends ChangeNotifier {
     bool? includePowertrain,
     UnitSystem? unitSystem,
     VehicleBus? bus,
+    bool? hasMsSwitch,
   }) async {
     if (host != null && host.trim().isNotEmpty) _host = host.trim();
     if (port != null && port > 0 && port < 65536) _port = port;
     if (includePowertrain != null) _includePowertrain = includePowertrain;
     if (unitSystem != null) _unitSystem = unitSystem;
     if (bus != null) _bus = bus;
+    if (hasMsSwitch != null) _hasMsSwitch = hasMsSwitch;
     notifyListeners();
     try {
       final p = await SharedPreferences.getInstance();
@@ -63,6 +68,7 @@ class Settings extends ChangeNotifier {
       await p.setBool('includePowertrain', _includePowertrain);
       await p.setString('unitSystem', unitSystemToString(_unitSystem));
       await p.setString('bus', _bus == VehicleBus.legacy ? 'legacy' : 'can');
+      await p.setBool('hasMsSwitch', _hasMsSwitch);
     } catch (_) {
       // persistence is best-effort
     }

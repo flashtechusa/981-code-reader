@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'elm327.dart';
+import 'module.dart' show CanBus;
 import 'uds.dart';
 
 /// SAE J1979 Mode 01 PID definition with decode formula.

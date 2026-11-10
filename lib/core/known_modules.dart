@@ -52,4 +52,25 @@ const Map<int, KnownModule> knownModules11 = {
   0x773: KnownModule('19', 'Gateway', 'VW'),
 };
 
+/// Ford MS-CAN (pins 3/11, 125 kbps) addresses. Several modules answer on
+/// both buses (BCM, PAM ...); these are the ones usually ONLY on MS-CAN.
+const Map<int, KnownModule> knownModulesMs = {
+  0x720: KnownModule('IPC', 'Instrument Panel Cluster', 'Ford'),
+  0x726: KnownModule('BCM', 'Body Control Module', 'Ford'),
+  0x727: KnownModule('ACM', 'Audio Control Module', 'Ford'),
+  0x731: KnownModule('RFA', 'Remote Function Actuator', 'Ford'),
+  0x733: KnownModule('HVAC', 'Heating, Ventilation & A/C Module', 'Ford'),
+  0x734: KnownModule('HCM', 'Headlamp Control Module', 'Ford'),
+  0x736: KnownModule('PAM', 'Parking Aid Module', 'Ford'),
+  0x740: KnownModule('DDM', 'Driver Door Module', 'Ford'),
+  0x741: KnownModule('PDM', 'Passenger Door Module', 'Ford'),
+  0x744: KnownModule('DSM', 'Driver Seat Module', 'Ford'),
+  0x754: KnownModule('TCU', 'Telematics Control Unit', 'Ford'),
+  0x7A7: KnownModule('FCIM', 'Front Controls Interface Module', 'Ford'),
+  0x7C4: KnownModule('SODL', 'Side Obstacle Detection - Left', 'Ford'),
+  0x7C6: KnownModule('SODR', 'Side Obstacle Detection - Right', 'Ford'),
+  0x7D0: KnownModule('APIM', 'SYNC / Accessory Protocol Interface Module', 'Ford'),
+  0x7E7: KnownModule('TRM', 'Trailer Module', 'Ford'),
+};
+
 KnownModule? knownModule11(int reqId) => knownModules11[reqId];

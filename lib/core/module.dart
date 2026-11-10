@@ -2,12 +2,19 @@ import 'hex.dart';
 import 'known_modules.dart';
 import 'uds.dart';
 
+/// Which physical CAN the module lives on. Ford (and some others) run two:
+/// HS-CAN on OBD pins 6/14 at 500 kbps and MS-CAN on pins 3/11 at 125 kbps.
+/// A single-channel ELM327 reaches MS-CAN only through the adapter's HS/MS
+/// switch, so the user has to flip it - the UI prompts for that.
+enum CanBus { hs, ms }
+
 /// One ECU found on the diagnostic CAN.
 class Module {
   Module({
     required this.bits,
     required this.reqId,
     required this.respId,
+    this.bus = CanBus.hs,
     Map<String, String>? info,
     List<Dtc>? dtcs,
     this.note,
@@ -17,6 +24,7 @@ class Module {
   final int bits;
   final int reqId;
   final int respId;
+  final CanBus bus;
   Map<String, String> info;
   List<Dtc> dtcs;
 
@@ -24,7 +32,11 @@ class Module {
   String? note;
 
   /// Address-convention hint (Ford/VW tables), 11-bit only.
-  KnownModule? get known => bits == 11 ? knownModule11(reqId) : null;
+  KnownModule? get known {
+    if (bits != 11) return null;
+    if (bus == CanBus.ms) return knownModulesMs[reqId] ?? knownModule11(reqId);
+    return knownModule11(reqId);
+  }
 
   /// True when identification text says airbag, OR the address is a known
   /// restraints-module address AND the module did not identify as something
@@ -49,7 +61,9 @@ class Module {
       : powertrain29Targets.contains((reqId >> 8) & 0xFF);
 
   /// "715" or "18DA15F1"
-  String get address => bits == 11 ? hexN(reqId, 3) : hexN(reqId, 8);
+  String get address =>
+      (bits == 11 ? hexN(reqId, 3) : hexN(reqId, 8)) +
+      (bus == CanBus.ms ? ' MS' : '');
   String get responseAddress => bits == 11 ? hexN(respId, 3) : hexN(respId, 8);
 
   String get systemName => info['system name'] ?? '';
@@ -76,6 +90,7 @@ class Module {
         bits: bits,
         reqId: reqId,
         respId: respId,
+        bus: bus,
         info: info ?? this.info,
         dtcs: dtcs ?? this.dtcs,
         note: note ?? this.note,
