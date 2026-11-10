@@ -1,10 +1,12 @@
 # Staged DTC text - NOT bundled
 
-Nothing in this folder is read by the app: it is not in `pubspec.yaml` assets
-and no Dart file imports it. These are candidates waiting for review. The app's
-active tables are unchanged: `lib/core/dtc_table.dart` (2,066 SAE codes),
+The CSV files in this folder are not read by the app and are not listed in
+`pubspec.yaml` assets. Most are candidates waiting for review. The app's active
+text tables are `lib/core/dtc_table.dart` (2,066 SAE codes),
 `lib/core/ford_dtc_table.dart` (Tony's Ford list) and
-`lib/core/verified_generic_dtc.dart` (verified generic additions).
+`lib/core/verified_generic_dtc.dart` (source-checked generic additions).
+U0074 is staged here for audit, and its verified text is also in the active
+Dart table.
 
 ## Files
 
