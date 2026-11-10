@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app/session.dart';
+import '../app/settings.dart';
+import '../core/dtc_text.dart';
 import '../core/module.dart';
 import '../core/uds.dart';
 import 'theme.dart';
@@ -66,6 +68,7 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.watch<Session>();
+    context.watch<Settings>(); // code-text setting changes the descriptions
     final active = s.modules.fold<int>(0, (n, m) => n + m.activeDtcs.length);
     final total = s.modules.fold<int>(0, (n, m) => n + m.dtcs.length);
     return Scaffold(
@@ -121,6 +124,7 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
                   showInactive: _showInactive,
                   onDtcTap: (d) => _showDetail(m, d),
                   onClear: s.busy ? null : () => _clear(m),
+                  describe: s.describe,
                 );
               },
             ),
@@ -156,6 +160,8 @@ class _DtcDetailSheetState extends State<_DtcDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final d = widget.dtc;
+    final sess = context.watch<Session>();
+    final text = sess.describe(d);
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
@@ -169,15 +175,31 @@ class _DtcDetailSheetState extends State<_DtcDetailSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 2),
               child: Text(
-                d.description ??
-                    'Manufacturer-specific code - not in the SAE generic table',
+                text.isKnown
+                    ? text.meanings.first
+                    : 'Manufacturer-specific code - no text in the SAE '
+                        'generic table${sess.fordCodeText ? ' or the Ford list' : ''}',
                 style: TextStyle(
                     fontSize: 14,
-                    color: d.description == null
-                        ? AppColors.textDim
-                        : AppColors.text),
+                    color: text.isKnown ? AppColors.text : AppColors.textDim),
               ),
             ),
+            if (text.source == DtcTextSource.ford) ...[
+              Text(
+                text.otherCount == 0
+                    ? 'From the Ford code list.'
+                    : 'From the Ford code list. This code means different '
+                        'things in different modules - other meanings:',
+                style: const TextStyle(color: AppColors.textDim, fontSize: 12),
+              ),
+              for (final other in text.meanings.skip(1))
+                Padding(
+                  padding: const EdgeInsets.only(top: 3, left: 8),
+                  child: Text('-  $other',
+                      style: const TextStyle(fontSize: 13)),
+                ),
+              const SizedBox(height: 4),
+            ],
             Text(
               'module ${widget.module.address}  ${widget.module.displayName}',
               style: const TextStyle(color: AppColors.textDim),

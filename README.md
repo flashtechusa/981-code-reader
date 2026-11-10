@@ -28,6 +28,10 @@ no resets, no programming session - airbag coding is a PIWIS job.
    the `19 04` snapshot and `19 06` extended data hex. Each module card has a
    **Clear codes** button (typed `CLEAR` confirmation, `14 FF FF FF` to that module
    only, then re-read).
+   Code text: SAE generic text for standard codes; on Ford / Lincoln / Mercury /
+   Mazda vehicles, manufacturer codes also get text from Tony's Ford code list
+   (Settings -> Manufacturer code text: Auto by VIN / Ford family / Off). Where a
+   code means different things in different modules, the detail sheet lists all.
 7. **Clear SRS** - enabled only when exactly one module is flagged as the airbag
    unit. Type `CLEAR`. The app tries `10 03`, falls back to the default session if
    refused, sends TesterPresent, `14 FF FF FF`, waits out `0x78` pending, verifies

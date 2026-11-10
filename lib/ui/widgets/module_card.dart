@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/dtc_text.dart';
 import '../../core/module.dart';
 import '../../core/uds.dart';
 import '../theme.dart';
@@ -14,6 +15,7 @@ class ModuleCard extends StatelessWidget {
     this.showInactive = false,
     this.onDtcTap,
     this.onClear,
+    this.describe,
   });
 
   final Module module;
@@ -23,6 +25,10 @@ class ModuleCard extends StatelessWidget {
   final bool showInactive;
   final void Function(Dtc dtc)? onDtcTap;
   final VoidCallback? onClear;
+
+  /// Text lookup for this vehicle (Session.describe). Without it, only the
+  /// SAE generic table is used.
+  final DtcText Function(Dtc dtc)? describe;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +100,12 @@ class ModuleCard extends StatelessWidget {
                   const Text('no active faults',
                       style: TextStyle(color: AppColors.ok)),
                 for (final d in showInactive ? m.dtcs : m.activeDtcs)
-                  _DtcRow(dtc: d, onTap: onDtcTap),
+                  _DtcRow(
+                    dtc: d,
+                    text: describe?.call(d) ??
+                        describeDtcCode(d.saeBase, ford: false),
+                    onTap: onDtcTap,
+                  ),
                 if (!showInactive && m.inactiveCount > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -143,8 +154,9 @@ class ModuleCard extends StatelessWidget {
 }
 
 class _DtcRow extends StatelessWidget {
-  const _DtcRow({required this.dtc, this.onTap});
+  const _DtcRow({required this.dtc, required this.text, this.onTap});
   final Dtc dtc;
+  final DtcText text;
   final void Function(Dtc dtc)? onTap;
 
   @override
@@ -174,13 +186,22 @@ class _DtcRow extends StatelessWidget {
                         fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    dtc.description ?? 'Manufacturer-specific code',
+                    text.headline ?? 'Manufacturer-specific code',
                     style: TextStyle(
                         fontSize: 12,
-                        color: dtc.description == null
-                            ? AppColors.textDim
-                            : AppColors.text),
+                        color: text.isKnown
+                            ? AppColors.text
+                            : AppColors.textDim),
                   ),
+                  if (text.source == DtcTextSource.ford)
+                    Text(
+                      text.otherCount > 0
+                          ? 'Ford list  -  +${text.otherCount} other '
+                              'meaning${text.otherCount == 1 ? '' : 's'}, tap for all'
+                          : 'Ford list',
+                      style: const TextStyle(
+                          fontSize: 11, color: AppColors.textDim),
+                    ),
                   Text(
                     'status 0x${dtc.status.toRadixString(16).toUpperCase().padLeft(2, '0')}  ${dtc.statusNames}',
                     style: monoStyle.copyWith(color: AppColors.textDim),

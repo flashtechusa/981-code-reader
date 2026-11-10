@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/dtc_text.dart';
 import '../core/units.dart';
 
 /// Which diagnostic bus the car has.
@@ -21,6 +22,7 @@ class Settings extends ChangeNotifier {
   UnitSystem _unitSystem = UnitSystem.us; // US default: mph / °F
   VehicleBus _bus = VehicleBus.can;
   bool _hasMsSwitch = true; // bbfly / OBDLink MX style HS/MS switch
+  MakeCodeText _codeText = MakeCodeText.auto;
 
   String get host => _host;
   int get port => _port;
@@ -29,6 +31,7 @@ class Settings extends ChangeNotifier {
   VehicleBus get bus => _bus;
   bool get legacyBus => _bus == VehicleBus.legacy;
   bool get hasMsSwitch => _hasMsSwitch;
+  MakeCodeText get codeText => _codeText;
   Units get units => Units(_unitSystem);
 
   Future<void> load() async {
@@ -40,6 +43,7 @@ class Settings extends ChangeNotifier {
       _unitSystem = unitSystemFromString(p.getString('unitSystem'));
       _bus = p.getString('bus') == 'legacy' ? VehicleBus.legacy : VehicleBus.can;
       _hasMsSwitch = p.getBool('hasMsSwitch') ?? true;
+      _codeText = makeCodeTextFromString(p.getString('codeText'));
     } catch (_) {
       // keep defaults
     }
@@ -53,6 +57,7 @@ class Settings extends ChangeNotifier {
     UnitSystem? unitSystem,
     VehicleBus? bus,
     bool? hasMsSwitch,
+    MakeCodeText? codeText,
   }) async {
     if (host != null && host.trim().isNotEmpty) _host = host.trim();
     if (port != null && port > 0 && port < 65536) _port = port;
@@ -60,6 +65,7 @@ class Settings extends ChangeNotifier {
     if (unitSystem != null) _unitSystem = unitSystem;
     if (bus != null) _bus = bus;
     if (hasMsSwitch != null) _hasMsSwitch = hasMsSwitch;
+    if (codeText != null) _codeText = codeText;
     notifyListeners();
     try {
       final p = await SharedPreferences.getInstance();
@@ -69,6 +75,7 @@ class Settings extends ChangeNotifier {
       await p.setString('unitSystem', unitSystemToString(_unitSystem));
       await p.setString('bus', _bus == VehicleBus.legacy ? 'legacy' : 'can');
       await p.setBool('hasMsSwitch', _hasMsSwitch);
+      await p.setString('codeText', makeCodeTextToString(_codeText));
     } catch (_) {
       // persistence is best-effort
     }

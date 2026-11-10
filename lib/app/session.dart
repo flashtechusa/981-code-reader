@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../core/clear.dart';
+import '../core/dtc_text.dart';
 import '../core/elm327.dart';
 import '../core/hex.dart';
 import '../core/legacy_obd.dart';
@@ -91,6 +92,16 @@ class Session extends ChangeNotifier {
   List<Module> get airbagModules => modules.where((m) => m.isAirbag).toList();
   Module? get soleAirbagModule =>
       airbagModules.length == 1 ? airbagModules.first : null;
+
+  /// Whether Tony's Ford-family code list applies to the car on the bus:
+  /// the Settings choice, else (auto) any Ford / Lincoln / Mercury / Mazda VIN
+  /// a module reported, else Ford MS-CAN modules having answered.
+  bool get fordCodeText => fordTextApplies(settings.codeText,
+      vins: modules.map((m) => m.info['VIN']).whereType<String>(),
+      hasMsCanModules: modules.any((m) => m.bus == CanBus.ms));
+
+  /// Plain-English text for [d] on this vehicle.
+  DtcText describe(Dtc d) => describeDtcCode(d.saeBase, ford: fordCodeText);
 
   // ---- helpers -----------------------------------------------------------
 

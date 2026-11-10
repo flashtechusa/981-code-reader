@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:boxster_srs/core/clear.dart';
+import 'package:boxster_srs/core/dtc_text.dart';
+import 'package:boxster_srs/core/ford_dtc_table.dart';
 import 'package:boxster_srs/core/elm327.dart';
 import 'package:boxster_srs/core/mock_adapter.dart';
 import 'package:boxster_srs/core/module.dart';
@@ -42,6 +44,7 @@ void main() {
   _unitsTests();
   _makeAgnosticTests();
   _legacyTests();
+  _fordCodeTextTests();
 
   group('fake adapter (ported Python test)', () {
     test('TesterPresent answers 7E 00', () async {
@@ -627,6 +630,93 @@ void _legacyTests() {
       await expectLater(uds.request([sidObdReadStored]), throwsA(isA<UdsException>()));
       await expectLater(uds.request([sidObdClear], allowObdClear: true), throwsA(isA<UdsException>()));
       expect(t.sent.length, before);
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Tony's Ford code list: decoding, precedence over SAE, per-vehicle gating
+// ---------------------------------------------------------------------------
+void _fordCodeTextTests() {
+  const f150 = '1FTEW1EG5FFA12345';
+  const boxster = 'WP0CA2A85EK100000';
+  const maserati = 'ZAMBC38A040012345';
+  const mazda = 'JM1BL1V75C1234567';
+
+  group('Ford DTC table (generated)', () {
+    test('keys are 5-char SAE codes, no placeholders', () {
+      final key = RegExp(r'^[PCBU][0-3][0-9A-F]{3}$');
+      expect(fordDtcText.length, greaterThan(15000));
+      for (final e in fordDtcText.entries) {
+        expect(key.hasMatch(e.key), isTrue, reason: e.key);
+        expect(e.value, isNotEmpty, reason: e.key);
+        for (final t in e.value) {
+          expect(t.toLowerCase(), isNot(contains('refer to the workshop manual')));
+          expect(t, isNot(contains(r'\x9')));
+        }
+      }
+    });
+    test('2-byte and 4-byte source keys decode to the right code', () {
+      expect(fordDtcText['B1B7E'], ['Left Rear Temperature Control']); // 0x9B7E0000
+      expect(fordDtcText['U0013'], ['Medium Speed CAN Communication Bus (+) Low']);
+      expect(fordDtcText['U0151']!.first,
+          'Lost Communication With Restraints Control Module');
+      expect(fordDtcText['B0001'], contains('Driver Frontal Stage 1 Deployment Control'));
+    });
+  });
+
+  group('describeDtcCode', () {
+    test('SAE generic text wins and is not mixed with Ford meanings', () {
+      final t = describeDtcCode('P0420', ford: true);
+      expect(t.source, DtcTextSource.sae);
+      expect(t.meanings, [dtcDescription('P0420')]);
+    });
+    test('manufacturer code: Ford text only when the Ford list applies', () {
+      expect(describeDtcCode('B1B7E', ford: false).isKnown, isFalse);
+      final t = describeDtcCode('b1b7e', ford: true);
+      expect(t.source, DtcTextSource.ford);
+      expect(t.headline, 'Left Rear Temperature Control');
+      expect(t.otherCount, 0);
+    });
+    test('several meanings are all kept; headline is one line', () {
+      final t = describeDtcCode('B0001', ford: true);
+      expect(t.otherCount, greaterThanOrEqualTo(1));
+      expect(t.headline, isNot(contains('\n')));
+    });
+    test('unknown everywhere -> none', () {
+      final t = describeDtcCode('C3FFF', ford: true);
+      expect(t.isKnown, isFalse);
+      expect(t.headline, isNull);
+    });
+  });
+
+  group('fordTextApplies', () {
+    test('auto: Ford-family VIN yes, Porsche / Maserati VIN no', () {
+      expect(fordTextApplies(MakeCodeText.auto, vins: [f150]), isTrue);
+      expect(fordTextApplies(MakeCodeText.auto, vins: [mazda]), isTrue);
+      expect(fordTextApplies(MakeCodeText.auto, vins: [boxster]), isFalse);
+      expect(fordTextApplies(MakeCodeText.auto, vins: [maserati]), isFalse);
+    });
+    test('auto: a real non-Ford VIN beats the MS-CAN hint', () {
+      expect(
+          fordTextApplies(MakeCodeText.auto,
+              vins: [boxster], hasMsCanModules: true),
+          isFalse);
+    });
+    test('auto: no usable VIN -> only MS-CAN modules switch it on', () {
+      expect(fordTextApplies(MakeCodeText.auto), isFalse);
+      expect(fordTextApplies(MakeCodeText.auto, vins: ['0A1B2C']), isFalse);
+      expect(fordTextApplies(MakeCodeText.auto, hasMsCanModules: true), isTrue);
+    });
+    test('manual override both ways', () {
+      expect(fordTextApplies(MakeCodeText.ford, vins: [boxster]), isTrue);
+      expect(fordTextApplies(MakeCodeText.off, vins: [f150]), isFalse);
+    });
+    test('setting round-trips through its stored string', () {
+      for (final m in MakeCodeText.values) {
+        expect(makeCodeTextFromString(makeCodeTextToString(m)), m);
+      }
+      expect(makeCodeTextFromString(null), MakeCodeText.auto);
     });
   });
 }

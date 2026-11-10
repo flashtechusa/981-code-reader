@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app/settings.dart';
+import '../core/dtc_text.dart';
 import '../core/units.dart';
 import 'theme.dart';
 
@@ -27,6 +28,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late UnitSystem _units;
   late VehicleBus _bus;
   late bool _msSwitch;
+  late MakeCodeText _codeText;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _units = s.unitSystem;
     _bus = s.bus;
     _msSwitch = s.hasMsSwitch;
+    _codeText = s.codeText;
   }
 
   @override
@@ -57,6 +60,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
       unitSystem: _units,
       bus: _bus,
       hasMsSwitch: _msSwitch,
+      codeText: _codeText,
     );
     if (mounted) Navigator.of(context).pop();
   }
@@ -148,6 +152,37 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               selected: {_units},
               onSelectionChanged: (sel) => setState(() => _units = sel.first),
             ),
+          ),
+          const SizedBox(height: 14),
+          const Text('Manufacturer code text',
+              style: TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<MakeCodeText>(
+              segments: const [
+                ButtonSegment(value: MakeCodeText.auto, label: Text('Auto')),
+                ButtonSegment(
+                    value: MakeCodeText.ford, label: Text('Ford family')),
+                ButtonSegment(value: MakeCodeText.off, label: Text('Off')),
+              ],
+              selected: {_codeText},
+              onSelectionChanged: (sel) => setState(() => _codeText = sel.first),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            switch (_codeText) {
+              MakeCodeText.auto =>
+                'Uses the Ford code list when a module reports a Ford, Lincoln, '
+                    'Mercury or Mazda VIN (or Ford MS-CAN modules answer). '
+                    'Never on a Porsche or Maserati.',
+              MakeCodeText.ford =>
+                'Always use the Ford code list for manufacturer codes - for a '
+                    'Ford-family car whose modules report no VIN.',
+              MakeCodeText.off => 'SAE generic text only.',
+            },
+            style: const TextStyle(color: AppColors.textDim, fontSize: 12),
           ),
           const SizedBox(height: 8),
           SwitchListTile(
