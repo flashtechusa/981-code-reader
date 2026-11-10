@@ -91,6 +91,14 @@ PATTERN = {
     "P0383": "consistent: follows glow plug codes P0380-P0382",
     "P0384": "consistent: follows glow plug codes P0380-P0382",
 }
+VERIFIED_RESERVED = {
+    # Saab 9-4X (2011) WIS lists U0074 00 as Control Module Communication Bus B Off.
+    "U0074": (
+        "https://saabwisonline.com/9-4x/2011/3-electrical-system/bus-and-diagnostics-communication/fault-diagnosis-diagnostic-trouble-codes/control-module-u-code-list",
+        "verified - Saab 9-4X WIS 2011",
+        "added to verified_generic_dtc.dart",
+    ),
+}
 PRIMARY = {
     "U": "OEM service info listing SAE U-codes (e.g. Saab/GM WIS 'Control "
          "Module U Code List'), or SAE J2012-DA",
@@ -143,10 +151,14 @@ def main(db_path):
                     "ford_list_agreement", "pattern_check", "verification",
                     "primary_source_to_check", "decision"])
         for code, desc in reserved:
+            evidence = VERIFIED_RESERVED.get(code)
+            verification = evidence[1] if evidence else "unverified"
+            primary_source = evidence[0] if evidence else PRIMARY[code[0]]
+            decision = evidence[2] if evidence else "keep app text until verified"
             w.writerow([code, sae[code], desc, src,
                         ford_agreement(desc, ford.get(code, [])),
-                        PATTERN.get(code, "not checked"), "unverified",
-                        PRIMARY[code[0]], "keep app text until verified"])
+                        PATTERN.get(code, "not checked"), verification,
+                        primary_source, decision])
     print(f"{len(adds)} generic additions, {len(reserved)} reserved "
           f"replacements staged in {OUT}/")
     return len(adds), len(reserved)
