@@ -175,6 +175,7 @@ class ObdLive {
 
   /// Points the adapter at the DME. Must be called before [read].
   Future<void> prepare() async {
+    elm.bus = CanBus.hs; // the PCM / DME is always on HS-CAN
     await elm.setBits(11);
     await elm.setTimeoutMs(200);
     await elm.setTarget(dmeRequest11, resp: dmeResponse11);
