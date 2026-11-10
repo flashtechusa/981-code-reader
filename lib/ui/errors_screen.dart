@@ -175,24 +175,41 @@ class _DtcDetailSheetState extends State<_DtcDetailSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 2),
               child: Text(
-                text.isKnown
+                text.headline != null
                     ? text.meanings.first
-                    : 'Manufacturer-specific code - no text in the SAE '
-                        'generic table${sess.fordCodeText ? ' or the Ford list' : ''}',
+                    : text.isKnown
+                        ? text.summary.replaceAll(' - tap to see', '')
+                        : 'Manufacturer-specific code - no text in the generic '
+                            'tables${sess.fordLevel != FordTextLevel.off ? ' or the Ford list' : ''}',
                 style: TextStyle(
                     fontSize: 14,
-                    color: text.isKnown ? AppColors.text : AppColors.textDim),
+                    color: text.headline != null
+                        ? AppColors.text
+                        : AppColors.textDim),
               ),
             ),
             if (text.source == DtcTextSource.ford) ...[
               Text(
-                text.otherCount == 0
-                    ? 'From the Ford code list.'
-                    : 'From the Ford code list. This code means different '
-                        'things in different modules - other meanings:',
-                style: const TextStyle(color: AppColors.textDim, fontSize: 12),
+                !text.makeConfirmed
+                    ? 'From the Ford code list. This vehicle is not confirmed '
+                        'as a Ford, Lincoln or Mercury, so these may not apply:'
+                    : !text.definitive
+                        ? 'From the Ford code list. This is a generic (SAE) '
+                            'code; the Ford list gives these meanings, none '
+                            'verified for this module:'
+                        : text.otherCount == 0
+                            ? text.label ?? 'From the Ford code list.'
+                            : 'From the Ford code list. This code means '
+                                'different things in different modules - '
+                                'other meanings:',
+                style: TextStyle(
+                    color: text.makeConfirmed
+                        ? AppColors.textDim
+                        : AppColors.warn,
+                    fontSize: 12),
               ),
-              for (final other in text.meanings.skip(1))
+              for (final other
+                  in text.definitive ? text.meanings.skip(1) : text.meanings)
                 Padding(
                   padding: const EdgeInsets.only(top: 3, left: 8),
                   child: Text('-  $other',

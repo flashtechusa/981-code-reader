@@ -163,7 +163,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               segments: const [
                 ButtonSegment(value: MakeCodeText.auto, label: Text('Auto')),
                 ButtonSegment(
-                    value: MakeCodeText.ford, label: Text('Ford family')),
+                    value: MakeCodeText.ford, label: Text('Ford')),
                 ButtonSegment(value: MakeCodeText.off, label: Text('Off')),
               ],
               selected: {_codeText},
@@ -174,13 +174,15 @@ class _SettingsSheetState extends State<_SettingsSheet> {
           Text(
             switch (_codeText) {
               MakeCodeText.auto =>
-                'Uses the Ford code list when a module reports a Ford, Lincoln, '
-                    'Mercury or Mazda VIN (or Ford MS-CAN modules answer). '
-                    'Never on a Porsche or Maserati.',
+                'Uses the Ford code list when a module reports a Ford, Lincoln '
+                    'or Mercury VIN. Mazda (or MS-CAN with no VIN): Ford '
+                    'meanings shown only as "not confirmed". Never on a '
+                    'Porsche or Maserati.',
               MakeCodeText.ford =>
-                'Always use the Ford code list for manufacturer codes - for a '
-                    'Ford-family car whose modules report no VIN.',
-              MakeCodeText.off => 'SAE generic text only.',
+                'Treat the car as a Ford - for one whose modules report no '
+                    'VIN. A VIN of another make still marks the Ford text '
+                    '"not confirmed".',
+              MakeCodeText.off => 'Generic (SAE) text only.',
             },
             style: const TextStyle(color: AppColors.textDim, fontSize: 12),
           ),

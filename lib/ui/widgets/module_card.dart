@@ -102,8 +102,7 @@ class ModuleCard extends StatelessWidget {
                 for (final d in showInactive ? m.dtcs : m.activeDtcs)
                   _DtcRow(
                     dtc: d,
-                    text: describe?.call(d) ??
-                        describeDtcCode(d.saeBase, ford: false),
+                    text: describe?.call(d) ?? describeDtcCode(d.saeBase),
                     onTap: onDtcTap,
                   ),
                 if (!showInactive && m.inactiveCount > 0)
@@ -186,21 +185,21 @@ class _DtcRow extends StatelessWidget {
                         fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    text.headline ?? 'Manufacturer-specific code',
+                    text.summary,
                     style: TextStyle(
                         fontSize: 12,
-                        color: text.isKnown
+                        color: text.headline != null
                             ? AppColors.text
                             : AppColors.textDim),
                   ),
-                  if (text.source == DtcTextSource.ford)
+                  if (text.label != null)
                     Text(
-                      text.otherCount > 0
-                          ? 'Ford list  -  +${text.otherCount} other '
-                              'meaning${text.otherCount == 1 ? '' : 's'}, tap for all'
-                          : 'Ford list',
-                      style: const TextStyle(
-                          fontSize: 11, color: AppColors.textDim),
+                      text.label!,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: text.makeConfirmed
+                              ? AppColors.textDim
+                              : AppColors.warn),
                     ),
                   Text(
                     'status 0x${dtc.status.toRadixString(16).toUpperCase().padLeft(2, '0')}  ${dtc.statusNames}',

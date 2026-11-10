@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:boxster_srs/core/clear.dart';
 import 'package:boxster_srs/core/dtc_text.dart';
 import 'package:boxster_srs/core/ford_dtc_table.dart';
+import 'package:boxster_srs/core/verified_generic_dtc.dart';
 import 'package:boxster_srs/core/elm327.dart';
 import 'package:boxster_srs/core/mock_adapter.dart';
 import 'package:boxster_srs/core/module.dart';
@@ -665,52 +666,137 @@ void _fordCodeTextTests() {
     });
   });
 
-  group('describeDtcCode', () {
+  group('describeDtcCode precedence', () {
     test('SAE generic text wins and is not mixed with Ford meanings', () {
-      final t = describeDtcCode('P0420', ford: true);
+      final t = describeDtcCode('P0420', ford: FordTextLevel.confirmed);
       expect(t.source, DtcTextSource.sae);
       expect(t.meanings, [dtcDescription('P0420')]);
+      expect(t.label, isNull);
     });
-    test('manufacturer code: Ford text only when the Ford list applies', () {
-      expect(describeDtcCode('B1B7E', ford: false).isKnown, isFalse);
-      final t = describeDtcCode('b1b7e', ford: true);
+    test('B0001: no silent pick of the Ford "ECU internal fault" entry', () {
+      // B0001 is an SAE generic-range code. Tony's list has two meanings;
+      // the most frequent one must not be presented as THE meaning.
+      final t = describeDtcCode('B0001', ford: FordTextLevel.confirmed);
+      expect(isManufacturerRange('B0001'), isFalse);
+      expect(t.source, DtcTextSource.ford);
+      expect(t.definitive, isFalse);
+      expect(t.headline, isNull);
+      expect(t.summary, isNot('ECU internal fault'));
+      expect(t.summary, startsWith('2 possible meanings'));
+      expect(t.meanings, containsAll(
+          ['ECU internal fault', 'Driver Frontal Stage 1 Deployment Control']));
+    });
+    test('B0001: a verified generic entry wins over the Ford list', () {
+      final t = describeDtcCode('B0001',
+          ford: FordTextLevel.confirmed,
+          verified: const {'B0001': 'Driver Frontal Stage 1 Deployment Control'});
+      expect(t.source, DtcTextSource.verifiedGeneric);
+      expect(t.headline, 'Driver Frontal Stage 1 Deployment Control');
+      expect(t.meanings, hasLength(1)); // Ford meanings not mixed in
+    });
+    test('verified entry replaces a stale SAE "Reserved" entry', () {
+      expect(dtcDescription('U0074'), startsWith('Reserved'));
+      final t = describeDtcCode('U0074',
+          verified: const {'U0074': 'Control Module Communication Bus B Off'});
+      expect(t.headline, 'Control Module Communication Bus B Off');
+    });
+    test('verified table: generic-range codes with real text only', () {
+      final key = RegExp(r'^[PCBU][0-3][0-9A-F]{3}$');
+      for (final e in verifiedGenericDtcText.entries) {
+        expect(key.hasMatch(e.key), isTrue, reason: e.key);
+        expect(isManufacturerRange(e.key), isFalse, reason: e.key);
+        expect(e.value.toLowerCase(), isNot(contains('reserved')), reason: e.key);
+        expect(e.value.trim().length, greaterThan(8), reason: e.key);
+      }
+      // Until U0074 is verified, the app keeps showing its current text.
+      if (!verifiedGenericDtcText.containsKey('U0074')) {
+        expect(describeDtcCode('U0074').headline, startsWith('Reserved'));
+      }
+    });
+    test('manufacturer-range code on a confirmed Ford is definitive', () {
+      final t = describeDtcCode('b1b7e', ford: FordTextLevel.confirmed);
+      expect(isManufacturerRange('B1B7E'), isTrue);
       expect(t.source, DtcTextSource.ford);
       expect(t.headline, 'Left Rear Temperature Control');
-      expect(t.otherCount, 0);
+      expect(t.label, 'Ford list');
     });
-    test('several meanings are all kept; headline is one line', () {
-      final t = describeDtcCode('B0001', ford: true);
-      expect(t.otherCount, greaterThanOrEqualTo(1));
-      expect(t.headline, isNot(contains('\n')));
+    test('generic-range code with one Ford meaning: shown, marked unverified', () {
+      final t = describeDtcCode('C0035', ford: FordTextLevel.confirmed);
+      expect(isManufacturerRange('C0035'), isFalse);
+      expect(fordDtcText['C0035'], hasLength(1));
+      expect(t.headline, 'Right Front Wheel Speed Sensor Supply');
+      expect(t.label, contains('not verified'));
+    });
+    test('Ford list off -> nothing for manufacturer codes', () {
+      expect(describeDtcCode('B1B7E').isKnown, isFalse);
+      expect(describeDtcCode('B1B7E').summary, 'Manufacturer-specific code');
     });
     test('unknown everywhere -> none', () {
-      final t = describeDtcCode('C3FFF', ford: true);
+      final t = describeDtcCode('C3FFF', ford: FordTextLevel.confirmed);
       expect(t.isKnown, isFalse);
       expect(t.headline, isNull);
     });
+    test('manufacturer ranges per SAE J2012', () {
+      for (final c in ['P1000', 'P3000', 'P3399', 'B1000', 'B2FFF', 'C1234',
+          'C2000', 'U1000', 'U2FFF']) {
+        expect(isManufacturerRange(c), isTrue, reason: c);
+      }
+      for (final c in ['P0001', 'P2000', 'P3400', 'B0001', 'B3000', 'C0035',
+          'C3000', 'U0100', 'U3000']) {
+        expect(isManufacturerRange(c), isFalse, reason: c);
+      }
+    });
   });
 
-  group('fordTextApplies', () {
-    test('auto: Ford-family VIN yes, Porsche / Maserati VIN no', () {
-      expect(fordTextApplies(MakeCodeText.auto, vins: [f150]), isTrue);
-      expect(fordTextApplies(MakeCodeText.auto, vins: [mazda]), isTrue);
-      expect(fordTextApplies(MakeCodeText.auto, vins: [boxster]), isFalse);
-      expect(fordTextApplies(MakeCodeText.auto, vins: [maserati]), isFalse);
+  group('Mazda is not a confirmed Ford match', () {
+    test('Mazda VIN: Ford text only as unconfirmed, never a headline', () {
+      expect(fordTextLevel(MakeCodeText.auto, vins: [mazda]),
+          FordTextLevel.unconfirmed);
+      final t = describeDtcCode('B1B7E', ford: FordTextLevel.unconfirmed);
+      expect(t.makeConfirmed, isFalse);
+      expect(t.headline, isNull);
+      expect(t.summary, contains('not confirmed'));
+      expect(t.label, contains('NOT confirmed'));
+      expect(t.meanings, ['Left Rear Temperature Control']); // still viewable
+    });
+    test('forcing "Ford" does not confirm a Mazda VIN', () {
+      expect(fordTextLevel(MakeCodeText.ford, vins: [mazda]),
+          FordTextLevel.unconfirmed);
+    });
+    test('Mazda and Ford VIN sets are disjoint', () {
+      expect(fordWmis.intersection(mazdaWmis), isEmpty);
+      expect(isFordVin(mazda), isFalse);
+      expect(isMazdaVin(mazda), isTrue);
+    });
+  });
+
+  group('fordTextLevel', () {
+    test('auto: Ford VIN confirmed, Porsche / Maserati VIN off', () {
+      expect(fordTextLevel(MakeCodeText.auto, vins: [f150]),
+          FordTextLevel.confirmed);
+      expect(fordTextLevel(MakeCodeText.auto, vins: [boxster]),
+          FordTextLevel.off);
+      expect(fordTextLevel(MakeCodeText.auto, vins: [maserati]),
+          FordTextLevel.off);
     });
     test('auto: a real non-Ford VIN beats the MS-CAN hint', () {
       expect(
-          fordTextApplies(MakeCodeText.auto,
+          fordTextLevel(MakeCodeText.auto,
               vins: [boxster], hasMsCanModules: true),
-          isFalse);
+          FordTextLevel.off);
     });
-    test('auto: no usable VIN -> only MS-CAN modules switch it on', () {
-      expect(fordTextApplies(MakeCodeText.auto), isFalse);
-      expect(fordTextApplies(MakeCodeText.auto, vins: ['0A1B2C']), isFalse);
-      expect(fordTextApplies(MakeCodeText.auto, hasMsCanModules: true), isTrue);
+    test('auto: no usable VIN -> MS-CAN only gives unconfirmed', () {
+      expect(fordTextLevel(MakeCodeText.auto), FordTextLevel.off);
+      expect(fordTextLevel(MakeCodeText.auto, vins: ['0A1B2C']),
+          FordTextLevel.off);
+      expect(fordTextLevel(MakeCodeText.auto, hasMsCanModules: true),
+          FordTextLevel.unconfirmed);
     });
-    test('manual override both ways', () {
-      expect(fordTextApplies(MakeCodeText.ford, vins: [boxster]), isTrue);
-      expect(fordTextApplies(MakeCodeText.off, vins: [f150]), isFalse);
+    test('manual override', () {
+      expect(fordTextLevel(MakeCodeText.ford), FordTextLevel.confirmed);
+      expect(fordTextLevel(MakeCodeText.ford, vins: [boxster]),
+          FordTextLevel.unconfirmed);
+      expect(fordTextLevel(MakeCodeText.off, vins: [f150]), FordTextLevel.off);
     });
     test('setting round-trips through its stored string', () {
       for (final m in MakeCodeText.values) {

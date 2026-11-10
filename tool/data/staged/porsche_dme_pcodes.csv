@@ -1,0 +1,648 @@
+dme_version,code,porsche_fault_no,model_note,description,code_range,app_sae_text,provenance,applies_to_981,verification
+5.2.2,P0101,,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0102,,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit Low Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0103,,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit High Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0112,,,Intake air temperature sensor,generic,Intake Air Temperature Sensor 1 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0113,,,Intake air temperature sensor,generic,Intake Air Temperature Sensor 1 Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0115,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0117,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0118,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0122,,,Throttle position sensor,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0123,,,Throttle position sensor,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0130,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0131,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0132,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0133,,,Aging of oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0134,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0136,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0137,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0138,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0139,,,Aging of oxygen sensor after catalytic converter,generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0140,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0150,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0151,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0152,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0153,,,Aging of oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0154,,,Oxygen sensor ahead of catalytic converter,generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0156,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0157,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0158,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0159,,,Aging of oxygen sensor after catalytic converter,generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0160,,,Oxygen sensor after catalytic converter,generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0197,,,Oil temperature sensor,generic,Engine Oil Temperature Sensor Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0198,,,Oil temperature sensor,generic,Engine Oil Temperature Sensor High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0300,,,Misfire damaging to catalytic converter,generic,Random/Multiple Cylinder Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0301,,,"Misfire, cylinder 1, damaging to catalytic converter",generic,Cylinder 1 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0302,,,"Misfire, cylinder 2, damaging to catalytic converter",generic,Cylinder 2 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0303,,,"Misfire, cylinder 3, damaging to catalytic converter",generic,Cylinder 3 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0304,,,"Misfire, cylinder 4, damaging to catalytic converter",generic,Cylinder 4 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0305,,,"Misfire, cylinder 5, damaging to catalytic converter",generic,Cylinder 5 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0306,,,"Misfire, cylinder 6, damaging to catalytic converter",generic,Cylinder 6 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0336,,,Crankshaft position sensor,generic,Crankshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0341,,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0410,,,Secondary air injection system,generic,Secondary Air Injection System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0420,,,Catalytic converter conversion,generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0430,,,Catalytic converter conversion,generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0440,,,Fuel Tank Ventilation System – Above Limit,generic,Evaporative Emission System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0441,,,Fuel Tank Ventilation System – Above Limit,generic,Evaporative Emission System Incorrect Purge Flow,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0442,,,Fuel tank ventilation system (micro-leak),generic,Evaporative Emission System Leak Detected (small leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0444,,,EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0445,,,EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0446,,,EVAP canister shutoff valve,generic,Evaporative Emission System Vent Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0447,,,EVAP canister shutoff valve,generic,Evaporative Emission System Vent Control Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0448,,,EVAP canister shutoff valve,generic,Evaporative Emission System Vent Control Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0450,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0452,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0453,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0455,,,Fuel tank ventilation system (major leak),generic,Evaporative Emission System Leak Detected (large leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0501,,,Vehicle speed,generic,Vehicle Speed Sensor 'A' Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0506,,,Idle air control,generic,Idle Air Control System RPM Lower Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0507,,,Idle air control,generic,Idle Air Control System RPM Higher Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0600,,,CAN timeout,generic,Serial Communication Link,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0603,,,Control module,generic,Internal Control Module Keep Alive Memory (KAM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0604,,,Control module,generic,Internal Control Module Random Access Memory (RAM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P0605,,,Control module,generic,Internal Control Module Read Only Memory (ROM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1102,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1105,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1107,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1110,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1115,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1117,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1119,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1121,,,Oxygen sensor heating,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1123,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1124,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1125,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1126,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1127,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1128,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1129,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1130,,,Oxygen sensing system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1140,,,Load sensing,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1157,,,Engine compartment temperature sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1158,,,Engine compartment temperature sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1213,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1214,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1215,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1216,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1217,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1218,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1225,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1226,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1227,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1228,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1229,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1230,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1237,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1238,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1239,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1240,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1241,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1242,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1265,,,Airbag signal,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1275,,,Aging of oxygen sensor ahead of catalytic converter,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1276,,,Aging of oxygen sensor ahead of catalytic converter,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1313,,,"Misfire, cylinder 1, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1314,,,"Misfire, cylinder 2, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1315,,,"Misfire, cylinder 3, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1316,,,"Misfire, cylinder 4, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1317,,,"Misfire, cylinder 5, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1318,,,"Misfire, cylinder 6, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1319,,,"Misfire, emission relevant",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1324,,,"Timing chain out of position, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1340,,,"Timing chain out of position, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1384,,,Knock sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1385,,,Knock sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1386,,,Knock control test pulse,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1397,,,Camshaft position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1411,,,Secondary air injection system,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1455,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1456,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1457,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1501,,,Fuel pump relay output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1502,,,Fuel pump relay output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1510,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1512,,,Intake manifold switchover 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1513,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1514,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1515,,,Intake manifold switchover 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1516,,,Intake manifold switchover 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1524,,,"Camshaft adjustment, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1530,,,"Camshaft adjustment, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1531,,,"Camshaft adjustment, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1539,,,"Camshaft adjustment, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1541,,,Fuel pump relay output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1551,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1552,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1553,,,Idle air control valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1570,,,Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1571,,,Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1585,,,Misfire with empty fuel tank,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1600,,,Voltage supply,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1601,,,Voltage supply,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1602,,,Voltage supply,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1640,,,Control module faulty,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1671,,,Engine compartment purge fan output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1673,,,Fan output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1689,,,Control module faulty,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1691,,,MIL (Check Engine),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1692,,,MIL (Check Engine),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1693,,,MIL (Check Engine),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+5.2.2,P1782,,,Engine engagement / nominal engine torque,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0102,,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit Low Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0103,,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit High Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0107,,,Ambient pressure sensor,generic,Manifold Absolute Pressure/Barometric Pressure Circuit Low Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0108,,,Ambient pressure sensor,generic,Manifold Absolute Pressure/Barometric Pressure Circuit High Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0112,,,Intake air temperature sensor,generic,Intake Air Temperature Sensor 1 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0113,,,Intake air temperature sensor,generic,Intake Air Temperature Sensor 1 Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0115,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0117,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0118,,,Engine temperature sensor,generic,Engine Coolant Temperature Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0121,,,Throttle valve,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0130,,,"Oxygen sensor ahead of TWC, bank 1",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0132,,,"Oxygen sensor ahead of TWC, bank 1",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0133,,,"Aging of oxygen sensor ahead of TWC, bank 1",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0153,,,"Aging of oxygen sensor ahead of TWC, bank 2",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0134,,,"Oxygen sensor ahead of TWC, bank 1",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0136,,,"Oxygen sensor after TWC, bank 1",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0138,,,"Oxygen sensor after TWC, bank 1",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0139,,,"Aging of oxygen sensor after TWC, bank 1",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0159,,,"Aging of oxygen sensor after TWC, bank 2",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0140,,,"Oxygen sensor after TWC, bank 1",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0150,,,"Oxygen sensor ahead of TWC, bank 2",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0152,,,"Oxygen sensor ahead of TWC, bank 2",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0154,,,"Oxygen sensor ahead of TWC, bank 2",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0156,,,"Oxygen sensor after TWC, bank 2",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0158,,,"Oxygen sensor after TWC, bank 2",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0160,,,"Oxygen sensor after TWC, bank 2",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0197,,,Oil temperature sensor,generic,Engine Oil Temperature Sensor Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0198,,,Oil temperature sensor,generic,Engine Oil Temperature Sensor High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0300,,,Misfire detection,generic,Random/Multiple Cylinder Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0301,,,"Misfire, cylinder 1",generic,Cylinder 1 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0302,,,"Misfire, cylinder 2",generic,Cylinder 2 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0303,,,"Misfire, cylinder 3",generic,Cylinder 3 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0304,,,"Misfire, cylinder 4",generic,Cylinder 4 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0305,,,"Misfire, cylinder 5",generic,Cylinder 5 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0306,,,"Misfire, cylinder 6",generic,Cylinder 6 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0327,,,Knock sensor 1,generic,Knock Sensor 1 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0332,,,Knock sensor 2,generic,Knock Sensor 2 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0336,,,Engine speed sensor signal,generic,Crankshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0341,,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0342,,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0343,,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0410,,,"Secondary air injection system, bank 1",generic,Secondary Air Injection System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1411,,,"Secondary air injection system, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0413,,,Electric change-over valve,generic,Secondary Air Injection System Switching Valve 'A' Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0414,,,Electric change-over valve,generic,Secondary Air Injection System Switching Valve 'A' Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0418,,,Secondary air injection pump,generic,Secondary Air Injection System Control 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0420,,,"TWC conversion, bank 1",generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0430,,,"TWC conversion, bank 2",generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0440,,,Fuel tank ventilation system,generic,Evaporative Emission System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0442,,,Fuel tank ventilation system (micro-leak),generic,Evaporative Emission System Leak Detected (small leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0444,,,EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0445,,,EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0446,,,EVAP canister shutoff valve (function),generic,Evaporative Emission System Vent Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0447,,,EVAP canister shutoff valve (output stage),generic,Evaporative Emission System Vent Control Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0448,,,EVAP canister shutoff valve (output stage),generic,Evaporative Emission System Vent Control Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0450,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0452,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0453,,,Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0455,,,Fuel tank ventilation system (major leak),generic,Evaporative Emission System Leak Detected (large leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0480,,,Fan output stage 1,generic,Fan 1 Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0482,,,Fan output stage 2,generic,Fan 3 Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0501,,,Vehicle speed,generic,Vehicle Speed Sensor 'A' Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0506,,,Idle air control,generic,Idle Air Control System RPM Lower Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0507,,,Idle air control,generic,Idle Air Control System RPM Higher Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0560,,,Voltage supply,generic,System Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0562,,,Voltage supply,generic,System Voltage Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0563,,,Voltage supply,generic,System Voltage High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0600,,,"CAN timeout, Tiptronic",generic,Serial Communication Link,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0604,,,Control module,generic,Internal Control Module Random Access Memory (RAM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0605,,,Control module,generic,Internal Control Module Read Only Memory (ROM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1671,,,Control module faulty,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P0650,,,MIL (Check Engine),generic,Malfunction Indicator Lamp (MIL) Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1115,,,"Heating of oxygen sensor ahead of TWC, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1119,,,"Heating of oxygen sensor ahead of TWC, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1117,,,"Oxygen sensor heating after TWC, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1118,,,"Oxygen sensor heating after TWC, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1121,,,Throttle position sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1122,,,Throttle position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1124,,,Fuel pump relay output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1125,,,"Oxygen sensing adaptation, upper load range, bank 1- Above Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1132,,,"Oxygen sensing adaptation, upper load range, bank 2- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1126,,,"Oxygen sensing adaptation, lower load range, bank 1- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1133,,,"Oxygen sensing adaptation, lower load range, bank 2- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1127,,,"Oxygen sensing error by means of short test, bank 1- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1134,,,"Oxygen sensing error by means of short test, bank 2- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1128,,,"Oxygen sensing adaptation, idle range, bank 1- Below Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1130,,,"Oxygen sensing adaptation, idle range, bank 2- Above Limit",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1137,,,Clutch switch,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1157,,,Engine compartment temperature,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1158,,,Engine compartment temperature,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1213,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1225,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1237,,,"Fuel injector, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1214,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1226,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1238,,,"Fuel injector, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1215,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1227,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1239,,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1216,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1228,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1240,,,"Fuel injector, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1217,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1229,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1241,,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1218,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1230,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1242,,,"Fuel injector, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1219,,,Pedal sensor potentiometer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1265,,,Airbag signal,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1266,,,Fuel cutoff function monitor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1508,,,Torque comparison function monitor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1275,,,"Aging of oxygen sensor ahead of TWC, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1276,,,"Aging of oxygen sensor ahead of TWC, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1324,,,"Position of camshaft in relation to crankshaft, bank",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1340,,,"Position of camshaft in relation to crankshaft, bank",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1325,,,"Camshaft adjustment, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1341,,,"Camshaft adjustment, bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1384,,,Knock control zero test,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1385,,,Knock control offset,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1386,,,Knock control test pulse,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1397,,,Camshaft position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1455,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1456,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1457,,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1501,,,"Throttle jacking unit, output stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1502,,,"Throttle jacking unit, spring test",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1503,,,"Throttle jacking unit, position error",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1504,,,"Throttle jacking unit, emergency air position",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1505,,,"Throttle jacking unit, control range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1506,,,"Throttle jacking unit, lower mechanical stop",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1507,,,"Throttle jacking unit, gain adjustment",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1509,,,Torque limiter,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1570,,,Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1571,,,Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1574,,,Stop light switch,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1576,,,Cruise control standby lamp,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1577,,,Accelerator pedal potentiometer 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1578,,,Accelerator pedal potentiometer 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1579,,,Crankshaft position signal,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1600,,,"CAN timeout, PSM",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1668,,,Start enable (output stage),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1670,,,"Electric change-over valve, variable-length manifold",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.2,P1674,,,Engine compartment purge fan output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0011,,,"Position of Camshaft in Relation to Crankshaft, Bank 1",generic,'A' Camshaft Position - Timing Over-Advanced or System Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0012,,,"Position of Camshaft in Relation to Crankshaft, Bank 1",generic,'A' Camshaft Position - Timing Over-Retarded,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0013,,,"Camshaft Adjustment, Bank 1 Output Stage",generic,'B' Camshaft Position - Actuator Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0021,,,"Position of Camshaft in Relation to Crankshaft, Bank 2",generic,'A' Camshaft Position - Timing Over-Advanced or System Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0022,,,"Position of Camshaft in Relation to Crankshaft, Bank 2",generic,'A' Camshaft Position - Timing Over-Retarded,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0023,,,"Camshaft Adjustment, Bank 2 Output Stage",generic,'B' Camshaft Position - Actuator Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0026,,,"Valve lift control, bank 1 output stage",generic,Intake Valve Control Solenoid Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0028,,,"Valve lift control, bank 2 output stage",generic,Intake Valve Control Solenoid Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0030,,,"Oxygen Sensor Heating Ahead of TWC, Bank 1",generic,HO2S Heater Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0031,,,"Oxygen Sensor Heating Ahead of TWC, Bank 1",generic,HO2S Heater Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0032,,,"Oxygen Sensor Heating Ahead of TWC, Bank 1",generic,HO2S Heater Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0036,,,"Oxygen Sensor Heating After TWC, Bank 1",generic,HO2S Heater Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0037,,,"Oxygen Sensor Heating After TWC, Bank 1",generic,HO2S Heater Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0038,,,"Oxygen Sensor Heating After TWC, Bank 1",generic,HO2S Heater Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0045,,,Charge Pressure Control Valve Output Stage,generic,Turbo/Super Charger Boost Control Solenoid Circuit/Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0047,,,Charge Pressure Control Valve Output Stage,generic,Turbo/Super Charger Boost Control Solenoid Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0048,,,Charge Pressure Control Valve Output Stage - Above Limit,generic,Turbo/Super Charger Boost Control Solenoid Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0050,,,"Oxygen Sensor Heating Ahead of TWC, Bank 2",generic,HO2S Heater Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0051,,,"Oxygen Sensor Heating Ahead of TWC, Bank 2",generic,HO2S Heater Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0052,,,"Oxygen Sensor Heating Ahead of TWC, Bank 2",generic,HO2S Heater Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0056,,,"Oxygen Sensor Heating After TWC, Bank 2",generic,HO2S Heater Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0057,,,"Oxygen Sensor Heating After TWC, Bank 2",generic,HO2S Heater Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0058,,,"Oxygen Sensor Heating After TWC, Bank 2",generic,HO2S Heater Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0071,,,Ambient Temperature (via CAN from instrument cluster),generic,Ambient Air Temperature Sensor Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0102,115,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit Low Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0103,115,,Mass air flow sensor,generic,Mass or Volume Air Flow Circuit High Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0107,299,,Ambient Pressure Sensor,generic,Manifold Absolute Pressure/Barometric Pressure Circuit Low Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0108,299,,Ambient Pressure Sensor,generic,Manifold Absolute Pressure/Barometric Pressure Circuit High Input,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0112,124,,Intake air temperature,generic,Intake Air Temperature Sensor 1 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0113,124,,Intake air temperature sensor,generic,Intake Air Temperature Sensor 1 Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0115,123,,Engine temperature,generic,Engine Coolant Temperature Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0116,,,Engine Temperature,generic,Engine Coolant Temperature Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0117,123,,Engine temperature,generic,Engine Coolant Temperature Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0118,123,,Engine temperature,generic,Engine Coolant Temperature Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0121,117,,Throttle valve,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0121,,,Accelerator Pedal Potentiometer 1,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0122,,,Accelerator Pedal Potentiometer 1,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0123,,,Accelerator Pedal Potentiometer 1,generic,Throttle/Pedal Position Sensor/Switch 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0125,,,Engine Temperature,generic,Insufficient Coolant Temperature for Closed Loop Fuel Control,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0128,,,Blocked Thermostat,generic,Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0129,,,Ambient Pressure Sensor,generic,Barometric Pressure Too Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0130,,,"10 Oxygen Sensor Ahead of TWC, Bank 1",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0131,,911 Carrera,"Oxygen sensor ahead of catalytic converter, bank 1",generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0132,,,"10 Oxygen Sensor Ahead of TWC, Bank 1",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0133,,,"10 Oxygen Sensor Ahead of TWC, Bank 1",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0134,,,"10 Oxygen Sensor Ahead of TWC, Bank 1",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0135,,,"Oxygen Sensor Heating Ahead of TWC, Bank 1",generic,O2 Sensor Heater Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0136,,,"12 Oxygen Sensor After TWC, Bank 1",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0137,,,"Oxygen Sensor After TWC, Bank 1",generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0138,,,"12 Oxygen Sensor After TWC, Bank 1",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0139,,,17 Ageing of oxygen sensor after TWC bank 1,generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0140,,,"12 Oxygen Sensor After TWC, Bank 1",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0141,373,,"Oxygen Sensor Heating After TWC, Bank 1",generic,O2 Sensor Heater Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0150,,,"18 Oxygen Sensor Ahead of TWC, Bank 2",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0151,,911 Carrera,"Oxygen sensor ahead of catalytic converter, bank 2",generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0152,,,"18 Oxygen Sensor Ahead of TWC, Bank 2",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0153,,,"18 Oxygen Sensor Ahead of TWC, Bank 2",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0154,,,"18 Oxygen Sensor Ahead of TWC, Bank 2",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0155,,,Oxygen Sensor Heating Ahead,generic,O2 Sensor Heater Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0156,,,"20 Oxygen Sensor After TWC, Bank 2",generic,O2 Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0157,,,"Oxygen Sensor After TWC, Bank 2",generic,O2 Sensor Circuit Low Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0158,,,"20 Oxygen Sensor After TWC, Bank 2",generic,O2 Sensor Circuit High Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0159,,,"Ageing of oxygen sensor after catalytic converter, bank 2",generic,O2 Sensor Circuit Slow OBDResponse,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0160,,,"20 Oxygen Sensor After TWC, Bank 2",generic,O2 Sensor Circuit No Activity Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0161,374,,"Oxygen Sensor Heating After TWC, Bank 2",generic,O2 Sensor Heater Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0171,,,"Oxygen Sensing Adaptation, Idle Range, Bank 1",generic,System Too Lean,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0172,,,"Oxygen Sensing Adaptation, Idle Range, Bank 1",generic,System Too Rich,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0174,,,"Oxygen Sensing Adaptation, Idle Range, Bank 2",generic,System Too Lean,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0175,,,"Oxygen Sensing Adaptation, Idle Range, Bank 2",generic,System Too Rich,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0197,125,,Oil temperature sensor,generic,Engine Oil Temperature Sensor Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0198,125,,Oil temperature sensor,generic,Engine Oil Temperature Sensor High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0201,,,"Fuel Injector, Cylinder 1",generic,Injector Circuit/Open - Cylinder 1,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0202,,,"Fuel Injector, Cylinder 2",generic,Injector Circuit/Open - Cylinder 2,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0203,,,"Fuel Injector, Cylinder 3",generic,Injector Circuit/Open - Cylinder 3,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0204,,,"Fuel Injector, Cylinder 4",generic,Injector Circuit/Open - Cylinder 4,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0205,,,"Fuel Injector, Cylinder 5",generic,Injector Circuit/Open - Cylinder 5,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0206,,,"Fuel Injector, Cylinder 6",generic,Injector Circuit/Open - Cylinder 6,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0221,,,Accelerator Pedal Potentiometer 2,generic,Throttle/Pedal Position Sensor/Switch 'B' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0222,,,Accelerator Pedal Potentiometer 2,generic,Throttle/Pedal Position Sensor/Switch 'B' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1578,,,Accelerator Pedal Potentiometer 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0230,,,Fuel Pump Relay Output Stage,generic,Fuel Pump Primary Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0234,,,Boost Pressure Characteristic,generic,Turbo/Super Charger Overboost Condition,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0237,353,,Pressure Sensor,generic,Turbo/Super Charger Boost Sensor 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0238,353,,Pressure Sensor,generic,Turbo/Super Charger Boost Sensor 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0261,,,"Fuel Injector, Cylinder 1",generic,Cylinder 1 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0262,,,"Fuel Injector, Cylinder 1",generic,Cylinder 1 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0264,,,"Fuel Injector, Cylinder 2",generic,Cylinder 2 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0265,,,"Fuel Injector, Cylinder 2",generic,Cylinder 2 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0267,,,"Fuel Injector, Cylinder 3",generic,Cylinder 3 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0268,,,"Fuel Injector, Cylinder 3",generic,Cylinder 3 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0270,,,"Fuel Injector, Cylinder 4",generic,Cylinder 4 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0271,,,"Fuel Injector, Cylinder 4",generic,Cylinder 4 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0273,,,"Fuel Injector, Cylinder 5",generic,Cylinder 5 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0274,,,"Fuel Injector, Cylinder 5",generic,Cylinder 5 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0276,,,"Fuel Injector, Cylinder 6",generic,Cylinder 6 Injector Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0277,,,"Fuel Injector, Cylinder 6",generic,Cylinder 6 Injector Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0300,507,,Misfire detection (sum total),generic,Random/Multiple Cylinder Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0301,508,,"Misfire, cylinder 1",generic,Cylinder 1 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0302,509,,"Misfire, cylinder 2",generic,Cylinder 2 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0303,510,,"Misfire, cylinder 3",generic,Cylinder 3 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0304,511,,"Misfire, cylinder 4",generic,Cylinder 4 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0305,512,,"Misfire, cylinder 5",generic,Cylinder 5 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0306,513,,"Misfire, cylinder 6",generic,Cylinder 6 Misfire Detected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0324,,,Knock Control Zero Test,generic,Knock Control System Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0327,210,,Knock sensor 1,generic,Knock Sensor 1 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0328,210,,Knock sensor 1,generic,Knock Sensor 1 Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0332,211,,Knock sensor 2,generic,Knock Sensor 2 Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0333,211,,Knock sensor 2,generic,Knock Sensor 2 Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0335,,,Engine Speed Sensor Signal,generic,Crankshaft Position Sensor 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0336,110,,Engine Speed Sensor Signal,generic,Crankshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0336,,,"Crankshaft Position Sensor, Signal Implausible",generic,Crankshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0341,112,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0342,112,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0343,112,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0344,,,Camshaft position sensor 1,generic,Camshaft Position Sensor 'A' Circuit Intermittent,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0346,,,Camshaft Position Sensor 2,generic,Camshaft Position Sensor 'A' Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0347,,,Camshaft Position Sensor 2 -,generic,Camshaft Position Sensor 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0348,,,Camshaft Position Sensor 2,generic,Camshaft Position Sensor 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0349,,,Camshaft position sensor 2,generic,Camshaft Position Sensor 'A' Circuit Intermittent,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0410,,,"80 Secondary Air Injection System, Bank 1",generic,Secondary Air Injection System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0413,,,85 Electric change-over valve,generic,Secondary Air Injection System Switching Valve 'A' Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0414,,,85 Electric change-over valve,generic,Secondary Air Injection System Switching Valve 'A' Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0418,,,84 Secondary air injection pump,generic,Secondary Air Injection System Control 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0420,,,"40 TWC conversion, bank 1",generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0430,,,"45 TWC Conversion, Bank 2",generic,Catalyst System Efficiency Below Threshold,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0440,,,93 Fuel Tank Ventilation System (DTESK),generic,Evaporative Emission System,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0441,,,93 Fuel Tank Ventilation System,generic,Evaporative Emission System Incorrect Purge Flow,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0442,,,97 Fuel Tank Ventilation System (Micro-leak),generic,Evaporative Emission System Leak Detected (small leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0444,,,98 EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0445,,,98 EVAP canister purge valve,generic,Evaporative Emission System Purge Control Valve Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0446,,,95 EVAP Canister Shutoff Valve (Function),generic,Evaporative Emission System Vent Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0447,,,96 EVAP canister shutoff valve (output stage),generic,Evaporative Emission System Vent Control Circuit Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0448,,,96 EVAP canister shutoff valve (output stage),generic,Evaporative Emission System Vent Control Circuit Shorted,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0450,,,99 Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0450,,,Fuel Tank Ventilation System (Major Leak),generic,Evaporative Emission System Pressure Sensor/Switch,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0451,,,Tank Pressure Sensor,generic,Evaporative Emission System Pressure Sensor/Switch Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0452,,,99 Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0453,,,99 Tank pressure sensor,generic,Evaporative Emission System Pressure Sensor/Switch High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0455,,,94 Fuel Tank Ventilation System (Major Leak),generic,Evaporative Emission System Leak Detected (large leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0456,,,Fuel Tank Ventilation System (Minor leak),generic,Evaporative Emission System Leak Detected (very small leak),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0480,494,,Fan output stage 1,generic,Fan 1 Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0481,495,,Fan output stage 2,generic,Fan 2 Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0482,591,,Fan output stage 3,generic,Fan 3 Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0491,,,"Secondary Air Injection System, Bank 1",generic,Secondary Air Injection System Insufficient Flow,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0492,,,"Secondary Air Injection System, Bank 2",generic,Secondary Air Injection System Insufficient Flow,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0501,120,,Vehicle speed,generic,Vehicle Speed Sensor 'A' Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0506,,,32 Idle air control at stop,generic,Idle Air Control System RPM Lower Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0507,,,32 Idle air control at stop,generic,Idle Air Control System RPM Higher Than Expected,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0513,,,Immobilizer,generic,Incorrect Immobilizer Key,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0560,107,,Voltage supply,generic,System Voltage,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0562,107,,Voltage supply,generic,System Voltage Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0563,107,,Voltage supply,generic,System Voltage High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0571,,,Stop Light Switch,generic,Brake Switch 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0600,236,,CAN timeout Tiptronic,generic,Serial Communication Link,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0601,,,DME relay/control module faulty (computer monitoring: reset),generic,Internal Control Module Memory Check Sum Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0603,105,,EEPROM Faulty,generic,Internal Control Module Keep Alive Memory (KAM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0604,406,,Control module faulty (RAM),generic,Internal Control Module Random Access Memory (RAM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0605,405,,Control module faulty (ROM),generic,Internal Control Module Read Only Memory (ROM) Error,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0607,,,Control Module Faulty (Computer Monitoring: Reset),generic,Control Module Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0638,,,"Throttle Jacking Unit, Position Error",generic,Throttle Actuator Control Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0645,,,A/C Compressor Control,generic,A/C Clutch Relay Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0646,,,A/C Compressor Control,generic,A/C Clutch Relay Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0650,661,,MIL Lamp (via CAN),generic,Malfunction Indicator Lamp (MIL) Control Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0674,,,A/C Compressor Control,generic,Cylinder 4 Glow Plug Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0700,,,Tiptronic (CAN transfer box setting implausible) or (Transmission oil temperature above maximum value),generic,Transmission Control System (MIL Request),undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0701,,,Tiptronic (Gear implausible/transmission slips),generic,Transmission Control System Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0702,,,Tiptronic (Control unit faulty),generic,Transmission Control System Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0706,,,Tiptronic (Selector lever switch implausible),generic,Transmission Range Sensor Circuit Range/Performance,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0712,,,Transmission Oil Temperature,generic,Transmission Fluid Temperature Sensor 'A' Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0713,,,Transmission Oil Temperature,generic,Transmission Fluid Temperature Sensor 'A' Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0715,,,Tiptronic (Supply voltage of speed sensors),generic,Input/Turbine Speed Sensor 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0720,,,Tiptronic (CAN: wheel speed rear right),generic,Output Speed Sensor Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0730,,,Tiptronic (Gear comparison negative),generic,Incorrect Gear Ratio,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0740,,,Tiptronic (Converter lockup clutch),generic,Torque Converter Clutch Circuit/Open,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0743,,,Tiptronic (Converter lockup clutch solenoid valve),generic,Torque Converter Clutch Circuit Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0748,,,"Tiptronic (Control solenoid valve, modulating pressure)",generic,Pressure Control Solenoid 'A' Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0753,,,"Tiptronic (Solenoid valve, 1-2/4-5 gearshift)",generic,Shift Solenoid 'A' Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0758,,,"Tiptronic (Solenoid valve, 2-3 gearshift)",generic,Shift Solenoid 'B' Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0763,,,"Tiptronic (Solenoid valve, 3-4 gearshift)",generic,Shift Solenoid 'C' Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0778,,,"Tiptronic (Control solenoid valve, shifting pressure)",generic,Pressure Control Solenoid 'B' Electrical,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P0830,,,Clutch Switch,generic,Clutch Pedal Switch 'A' Circuit,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1101,594,,"Input variables, charge measurement",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1102,,,Ambient Pressure Sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1105,,,"Oxygen Sensing Adaptation, Upper Load Range, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1106,,,"Oxygen Sensing Adaptation, Upper Load Range, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1107,,,"Oxygen Sensing Adaptation, Lower Load Range, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1108,,,"Oxygen Sensing Adaptation, Lower Load Range, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1109,,,"Input Variables, Charge Measurement",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1110,294,,Oxygen Sensors Exchanged Ahead of TWC,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1114,723,,"Heating LSU, Inertia Fuel Shutoff",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1115,,,"13 Oxygen Sensor Ahead of TWC, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1116,724,,"Heating LSU Bank 2, Inertia Fuel Shutoff",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1117,,,"14 Oxygen Sensor Heating After TWC, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1118,,,"4 Oxygen Sensor Heating After TWC, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1119,,,"5 Oxygen Sensor Heating Ahead of TWC, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1120,,,Throttle Valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1121,430,,Throttle position sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1122,431,,Throttle position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1124,167,,Fuel pump relay output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1125,357,,"Oxygen Sensing Adaptation, Upper Load Range, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1126,356,,"Oxygen Sensing Adaptation, Lower Load Range, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1127,418,,"Oxygen Sensing Error by means of Short Test, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1128,360,,"Oxygen Sensing Adaptation, Idle Range, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1130,361,,"Oxygen Sensing Adaptation, Idle Range, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1132,,,"359/357 Oxygen Sensing Adaptation, Upper Load Range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1133,358,,"Oxygen Sensing Adaptation, Lower Load Range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1134,419,,"Oxygen Sensing Error by means of Short Test, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1136,,,Pressure Comparison Charge Pressure,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1137,,,Clutch Switch,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1138,,,Throttle Position Sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1139,,,Throttle Position Sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1140,,,Throttle Position Sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1141,,,Throttle Position Sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1142,,,Oxygen Sensing Error by means of Short Test,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1143,,,Oxygen Sensing Error by means of Short Test,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1145,,,"Oxygen Sensor Ahead of TWC, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1146,,,"Oxygen Sensor Ahead of TWC, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1155,,,"Oxygen Sensor Ahead of TWC, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1156,,,"Oxygen Sensor Ahead of TWC, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1157,,,Engine Compartment Temperature Sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1158,,,Engine Compartment Temperature Sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1159,,,"Oxygen Sensor After TWC, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1160,,,"Oxygen Sensor After TWC, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1213,150,,"Fuel Injector, Cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1214,151,,"Fuel Injector, Cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1215,152,,"Fuel Injector, Cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1216,153,,"Fuel Injector, Cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1217,154,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1218,155,,"Fuel Injector, Cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1219,256,,Accelerator pedal,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1225,150,,"Fuel Injector, Cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1226,151,,"Fuel Injector, Cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1227,152,,"Fuel injector, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1228,153,,"Fuel Injector, Cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1229,154,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1230,155,,"Fuel Injector, Cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1237,150,,"Fuel Injector, Cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1238,151,,"Fuel Injector, Cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1239,152,,"Fuel Injector, Cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1240,153,,"Fuel Injector, Cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1241,154,,"Fuel injector, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1242,155,,"Fuel Injector, Cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1249,231,,Boost Pressure Control Deviation,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1250,,,Boost Pressure Control Deviation,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1255,230,,Boost Pressure Characteristic,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1265,301,,Airbag signal,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1266,409,,Fuel shutoff function monitor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1324,325,,"Position of Camshaft in Relation to Crankshaft, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1325,178,,"Camshaft Adjustment, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1328,,,Inlet camshaft output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1331,,,"Inlet camshaft output stage, bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1340,322,,"Position of Camshaft in Relation to Crankshaft, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1341,174,,"Camshaft Adjustment, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1342,189,,"Camshaft Adjustment, Bank 1 Output Stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1343,149,,"Camshaft Adjustment, Bank 2 Output Stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1344,579,,"Valve Lift Control, Bank 1, Output Stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1345,580,,"Valve Lift Control, Bank 2, Output Stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1348,,,"Camshaft Adjustment, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1349,,,"Camshaft Adjustment, Bank 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1350,637,,Valve lift control checksum error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1350,,911 Carrera,Valve lift control checksum error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1351,627,,"Valve lift control, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1351,,911 Carrera,"Valve lift control, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1352,628,,"Valve lift control, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1352,,911 Carrera,"Valve lift control, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1353,629,,"Valve lift control, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1353,,911 Carrera,"Valve lift control, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1354,630,,"Valve lift control, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1354,,911 Carrera,"Valve lift control, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1355,631,,"Valve lift control, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1355,,911 Carrera,"Valve lift control, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1356,632,,"Valve lift control, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1356,,911 Carrera,"Valve lift control, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1357,,,"Camshaft Adjustment, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1358,,,"Camshaft Adjustment, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1359,,,"Valve Lift Control, Cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1359,,911 Carrera,"Valve lift control, cylinder 1",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1360,,,"Valve Lift Control, Cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1360,,911 Carrera,"Valve lift control, cylinder 6",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1361,,,"Valve Lift Control, Cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1361,,911 Carrera,"Valve lift control, cylinder 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1362,,,"Valve Lift Control, Cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1362,,911 Carrera,"Valve lift control, cylinder 4",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1363,,,"Valve Lift Control, Cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1363,,911 Carrera,"Valve lift control, cylinder 3",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1364,,,"Valve Lift Control, Cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1364,,911 Carrera,"Valve lift control, cylinder 5",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1371,,,Valve Lift Control Checksum Error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1371,,911 Carrera,Valve lift control checksum error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1374,,,Valve Lift Control Checksum Error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1374,,911 Carrera,Valve lift control checksum error,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1384,220,,Knock control zero test,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1385,221,,Knock control offset,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1386,222,,Knock control test pulse,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1397,113,,Camshaft position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1411,208,,"Secondary Air Injection System, Bank 2",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1455,170,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1456,170,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1457,170,,A/C compressor control,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1501,403,,"Throttle jacking unit, output stage",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1502,412,,"Throttle jacking unit, spring test",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1503,402,,"Throttle jacking unit, position error",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1504,410,,"Throttle jacking unit, emergency air position",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1505,404,,"Throttle jacking unit, control range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1506,413,,Throttle jacking unit lower mechanical stop,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1507,411,,"Throttle jacking unit, gain adjustment",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1508,408,,Torque comparison function monitor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1509,429,,Torque Limiter,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1510,542,,Throttle jacking unit - exchange detection without adaptation,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1511,543,,Throttle jacking unit - abortion of test due to negative influence,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1512,,,76 Ambient Temperature (via CAN from instrument cluster),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1513,541,,"Throttle jacking unit, spring test",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1514,540,,Throttle jacking unit lower mechanical stop,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1515,,,"Throttle Jacking Unit, Spring Test",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1516,,,"Throttle Jacking Unit, Control Range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1517,,,"Throttle Jacking Unit, Abortion of Test due to Negative Influence on Ambient Condition",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1518,,,"Throttle Jacking Unit, Control Range",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1546,171,,Charge Pressure Control Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1547,171,,Charge Pressure Control Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1548,171,,Charge Pressure Control Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1570,,,39 Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1571,,,39 Immobilizer,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1574,364,,Stop light switch,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1575,,,Pedal Sensor Movement,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1576,662,,Cruise Control Standby Lamp via CAN,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1577,427,,Accelerator pedal position sensor 1,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1578,428,,Accelerator pedal position sensor 2,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1579,111,,Crankshaft Position Sensor,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1600,216,,CAN timeout PSM,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1601,,,CAN timeout instrument cluster,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1602,,,CAN Timeout Instrument Cluster,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1654,,,Cooling Water Shutoff Valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1655,,,Cooling Water Shutoff Valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1656,575,,Coolant shutoff valve,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1657,274,,Overrun Recirculating Air Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1658,,,Overrun Recirculating Air Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1659,,,Overrun Recirculating Air Valve Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1671,,,DME relay/control module faulty (computer monitoring: reset),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1674,497,,Engine compartment purge fan output stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1675,358,,Engine Purge Fan Fault,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1676,,,Engine Compartment Purge Fan Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1677,,,Engine Compartment Purge Fan Output Stage,manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1702,,,Tiptronic (Supply voltage of valves),manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P1748,,,"Tiptronic (Control solenoid valve, shifting pressure)",manufacturer,,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2088,,,Inlet camshaft output stage,generic,'A' Camshaft Position Actuator Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2089,,,Inlet camshaft output stage,generic,'A' Camshaft Position Actuator Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2092,,,"Inlet camshaft output stage, bank 2",generic,'A' Camshaft Position Actuator Control Circuit Low,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2093,,,"Inlet camshaft output stage, bank 2",generic,'A' Camshaft Position Actuator Control Circuit High,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2096,,,Signal Delay Time for Oxygen Sensor Ageing,generic,Post Catalyst Fuel Trim System Too Lean,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2097,,,Signal Delay Time for Oxygen Sensor Ageing,generic,Post Catalyst Fuel Trim System Too Rich,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2098,,,"Signal Delay Time for Oxygen Sensor Ageing, Bank 2",generic,Post Catalyst Fuel Trim System Too Lean,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2099,,,"Signal Delay Time for Oxygen Sensor Ageing, Bank 2",generic,Post Catalyst Fuel Trim System Too Rich,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified
+7.8,P2135,,,Accelerator Pedal,generic,Throttle/Pedal Position Sensor/Switch 'A' / 'B' Voltage Correlation,undocumented (2007 Word export),unknown - 981 DME version not in this document,unverified

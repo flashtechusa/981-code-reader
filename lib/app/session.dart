@@ -93,15 +93,15 @@ class Session extends ChangeNotifier {
   Module? get soleAirbagModule =>
       airbagModules.length == 1 ? airbagModules.first : null;
 
-  /// Whether Tony's Ford-family code list applies to the car on the bus:
-  /// the Settings choice, else (auto) any Ford / Lincoln / Mercury / Mazda VIN
-  /// a module reported, else Ford MS-CAN modules having answered.
-  bool get fordCodeText => fordTextApplies(settings.codeText,
+  /// How far Tony's Ford code list applies to the car on the bus: the
+  /// Settings choice plus every VIN the modules reported (Ford / Lincoln /
+  /// Mercury = confirmed; Mazda or MS-CAN-only = shown but NOT confirmed).
+  FordTextLevel get fordLevel => fordTextLevel(settings.codeText,
       vins: modules.map((m) => m.info['VIN']).whereType<String>(),
       hasMsCanModules: modules.any((m) => m.bus == CanBus.ms));
 
   /// Plain-English text for [d] on this vehicle.
-  DtcText describe(Dtc d) => describeDtcCode(d.saeBase, ford: fordCodeText);
+  DtcText describe(Dtc d) => describeDtcCode(d.saeBase, ford: fordLevel);
 
   // ---- helpers -----------------------------------------------------------
 
