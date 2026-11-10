@@ -1,5 +1,6 @@
 import 'elm327.dart';
 import 'hex.dart';
+import 'known_modules.dart';
 import 'module.dart';
 import 'uds.dart';
 
@@ -74,6 +75,43 @@ class Scanner {
         );
       }
     }
+
+    // ---- second chance for well-known addresses ---------------------------
+    // Some modules (Ford ABS / RCM / IPC / PSCM in particular) stay quiet on a
+    // bare TesterPresent until they have seen a session request. Re-probe
+    // only the known-address table with DiagnosticSessionControl default
+    // (10 01 - read-only, on the allow-list), then TesterPresent again.
+    if (!_cancel) {
+      await elm.setTimeoutMs(250);
+      final have = found.map((m) => m.reqId).toSet();
+      for (final rid in knownModules11.keys) {
+        if (_cancel) break;
+        if (have.contains(rid) || rid == functional11) continue;
+        if (isPowertrain11(rid) && !includePowertrain) continue;
+        await elm.setTarget(rid, wideFilter: true);
+        var resps = await uds.request([sidSession, 0x01], timeout: probe);
+        var ok = resps.entries.where((e) =>
+            e.value.isNotEmpty && (e.value[0] == 0x50 || e.value[0] == 0x7F));
+        if (ok.isEmpty) {
+          resps = await uds.request([sidTesterPresent, 0x00], timeout: probe);
+          ok = resps.entries.where((e) =>
+              e.value.isNotEmpty &&
+              (e.value[0] == 0x7E || e.value[0] == 0x7F));
+        }
+        for (final e in ok) {
+          found.add(Module(bits: 11, reqId: rid, respId: e.key));
+          yield ScanProgress(
+            phase: 'probe11',
+            message:
+                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered (2nd pass)',
+            fraction: 0.8 * step / total,
+          );
+          break;
+        }
+      }
+    }
+
+    found.sort((a, b) => a.reqId.compareTo(b.reqId));
 
     // ---- 29-bit normal fixed (tester = 0xF1) ----------------------------
     if (!_cancel) {

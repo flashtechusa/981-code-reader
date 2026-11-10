@@ -492,6 +492,36 @@ void _makeAgnosticTests() {
       expect(m.isAirbag, isTrue);
       expect(m.airbagByAddressOnly, isTrue);
     });
+    test('known non-airbag address is never flagged by active B-codes', () {
+      // Ford APIM (SYNC) at 0x7D0 throwing an active B-code: NOT airbag.
+      final m = Module(
+          bits: 11,
+          reqId: 0x7D0,
+          respId: 0x7D8,
+          dtcs: [Dtc(Uint8List.fromList([0x92, 0x15, 0x00]), 0x2B)]);
+      expect(m.isAirbag, isFalse);
+      // ... but identification text still wins over the address table.
+      final m2 = Module(
+          bits: 11, reqId: 0x7D0, respId: 0x7D8, info: {'system name': 'AIRBAG'});
+      expect(m2.isAirbag, isTrue);
+    });
+    test('unknown address with active B-code keeps the Porsche fallback', () {
+      final m = Module(
+          bits: 11,
+          reqId: 0x7A5,
+          respId: 0x7AD,
+          dtcs: [Dtc(Uint8List.fromList([0x80, 0x01, 0x04]), 0x2F)]);
+      expect(m.isAirbag, isTrue);
+    });
+    test('active vs inactive DTCs', () {
+      final m = Module(bits: 11, reqId: 0x726, respId: 0x72E, dtcs: [
+        Dtc(Uint8List.fromList([0xD0, 0x18, 0x00]), 0x50), // not completed
+        Dtc(Uint8List.fromList([0x92, 0x15, 0x00]), 0x2B), // failed
+        Dtc(Uint8List.fromList([0x01, 0x71, 0x00]), 0x04), // pending
+      ]);
+      expect(m.activeDtcs.length, 2);
+      expect(m.inactiveCount, 1);
+    });
     test('identified non-airbag module at 0x737 is NOT flagged', () {
       final m = Module(
           bits: 11, reqId: 0x737, respId: 0x73F, info: {'system name': 'GATEWAY'});

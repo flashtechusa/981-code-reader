@@ -52,8 +52,15 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
 * Airbag recognition (`looksLikeAirbag` + `Module.isAirbag`): text keywords
   AIRBAG/POSIP/SRS/RESTRAINT, whole-word RCM/SDM/ORC/ACU, Porsche 9xx.618 and
   Ford 14B321 part numbers, fresh B-codes; OR a known airbag address (0x737
-  Ford, 0x715 VW) when the module gave no system name. Clear SRS still needs
-  exactly one flagged module and the typed CLEAR.
+  Ford, 0x715 VW) when the module gave no system name. A module at a KNOWN
+  non-airbag address (Ford APIM/BCM/...) can only be flagged by identification
+  text - never by the active-B-code fallback (SYNC throws B-codes). Clear SRS
+  still needs exactly one flagged module and the typed CLEAR.
+* DTC display: `Dtc.isActive` = status & 0x0F != 0. Errors screen hides
+  inactive (0x50 "test not completed") entries by default with a toggle; Ford
+  modules list every supportable DTC that way.
+* Scan second pass: known-address table re-probed with `10 01` then `3E 00`
+  at 250 ms (Ford ABS/RCM/IPC/PSCM often ignore a bare TesterPresent).
 * Clear sequence (`lib/core/clear.dart`): `10 03` (fall back on refusal),
   TesterPresent, `ATST FF`, `14 FF FF FF`, on `0x78` poll with `3E 00` up to 5x,
   verify `0x54`, re-read DTCs, flag any `testFailed`, `10 01`.

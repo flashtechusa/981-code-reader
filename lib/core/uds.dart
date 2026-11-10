@@ -119,6 +119,12 @@ class Dtc {
   bool get testFailed => (status & 0x01) != 0;
   bool get isBodyCode => (bytes[0] >> 6) == 2;
 
+  /// A code that is actually doing something: failed now, failed this
+  /// cycle, pending, or confirmed. Many ECUs (Ford especially) also list
+  /// every DTC they *could* set with status 0x50 "test not completed" -
+  /// those are not faults and are hidden by default in the UI.
+  bool get isActive => (status & 0x0F) != 0;
+
   /// "P0301" - the SAE code without the failure-type suffix.
   String get saeBase => sae.substring(0, 5);
 
@@ -345,8 +351,8 @@ final RegExp _abbrRe = RegExp(r'\b(RCM|SDM|ORC|ACU)\b');
 /// Returns null for manufacturer-specific codes.
 String? dtcDescription(String saeBase) => saeDtcText[saeBase.toUpperCase()];
 
-/// Heuristic, identical to the Python `looks_like_airbag`.
-bool looksLikeAirbag(Map<String, String> info, List<Dtc> dtcs) {
+/// Identification-text evidence only (names, abbreviations, part numbers).
+bool airbagByIdentification(Map<String, String> info) {
   final text = info.values.join(' ').toUpperCase();
   // Porsche/VW: AIRBAG, POSIP. Generic: SRS, RESTRAINT. Ford: RCM.
   // GM: SDM (Sensing & Diagnostic Module). Chrysler: ORC (Occupant Restraint
@@ -359,6 +365,14 @@ bool looksLikeAirbag(Map<String, String> info, List<Dtc> dtcs) {
   // Porsche airbag control units carry part numbers in the 9xx 618 xxx xx family.
   if (_porschePartRe.hasMatch(text)) return true;
   if (_fordRcmPartRe.hasMatch(text)) return true;
-  // Body (B) codes freshly failed this cycle is the pattern an unplugged squib produces.
+  return false;
+}
+
+/// Heuristic, identical to the Python `looks_like_airbag`: identification
+/// text, OR body (B) codes actively failing - the pattern an unplugged squib
+/// produces. Callers that know the module is something else by address must
+/// not use the B-code part (see `Module.isAirbag`).
+bool looksLikeAirbag(Map<String, String> info, List<Dtc> dtcs) {
+  if (airbagByIdentification(info)) return true;
   return dtcs.any((d) => d.isBodyCode && d.testFailed);
 }

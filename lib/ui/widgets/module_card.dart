@@ -11,12 +11,16 @@ class ModuleCard extends StatelessWidget {
     super.key,
     required this.module,
     this.showDtcs = false,
+    this.showInactive = false,
     this.onDtcTap,
     this.onClear,
   });
 
   final Module module;
   final bool showDtcs;
+
+  /// Also list status-only entries (test not completed etc.).
+  final bool showInactive;
   final void Function(Dtc dtc)? onDtcTap;
   final VoidCallback? onClear;
 
@@ -85,8 +89,22 @@ class ModuleCard extends StatelessWidget {
               if (m.dtcs.isEmpty)
                 const Text('no DTCs stored',
                     style: TextStyle(color: AppColors.ok))
-              else
-                for (final d in m.dtcs) _DtcRow(dtc: d, onTap: onDtcTap),
+              else ...[
+                if (m.activeDtcs.isEmpty && !showInactive)
+                  const Text('no active faults',
+                      style: TextStyle(color: AppColors.ok)),
+                for (final d in showInactive ? m.dtcs : m.activeDtcs)
+                  _DtcRow(dtc: d, onTap: onDtcTap),
+                if (!showInactive && m.inactiveCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '+ ${m.inactiveCount} inactive (test not run / no fault) hidden',
+                      style: const TextStyle(
+                          color: AppColors.textDim, fontSize: 11),
+                    ),
+                  ),
+              ],
               if (onClear != null)
                 Align(
                   alignment: Alignment.centerRight,

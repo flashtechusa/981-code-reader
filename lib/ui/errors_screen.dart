@@ -17,6 +17,7 @@ class ErrorsScreen extends StatefulWidget {
 }
 
 class _ErrorsScreenState extends State<ErrorsScreen> {
+  bool _showInactive = false;
   @override
   void initState() {
     super.initState();
@@ -59,11 +60,21 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.watch<Session>();
+    final active = s.modules.fold<int>(0, (n, m) => n + m.activeDtcs.length);
     final total = s.modules.fold<int>(0, (n, m) => n + m.dtcs.length);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Errors  ($total)'),
+        title: Text(_showInactive ? 'Errors  ($total)' : 'Errors  ($active)'),
         actions: [
+          IconButton(
+            tooltip: _showInactive
+                ? 'Hide inactive (test-not-run) entries'
+                : 'Show all ${total - active} inactive entries',
+            icon: Icon(_showInactive
+                ? Icons.filter_alt_off_outlined
+                : Icons.filter_alt_outlined),
+            onPressed: () => setState(() => _showInactive = !_showInactive),
+          ),
           IconButton(
             tooltip: 'Re-read',
             icon: const Icon(Icons.refresh),
@@ -101,6 +112,7 @@ class _ErrorsScreenState extends State<ErrorsScreen> {
                 return ModuleCard(
                   module: m,
                   showDtcs: true,
+                  showInactive: _showInactive,
                   onDtcTap: (d) => _showDetail(m, d),
                   onClear: s.busy ? null : () => _clear(m),
                 );

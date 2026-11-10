@@ -28,14 +28,22 @@ class Module {
 
   /// True when identification text says airbag, OR the address is a known
   /// restraints-module address AND the module did not identify as something
-  /// else by name.
-  bool get isAirbag =>
-      looksLikeAirbag(info, dtcs) ||
-      (known?.airbag == true && systemName.isEmpty);
+  /// else by name. A module whose address is KNOWN to be something else
+  /// (Ford APIM, BCM ...) can only be flagged by identification text, never
+  /// by the "active B-code" fallback - SYNC modules throw B-codes too.
+  bool get isAirbag {
+    final k = known;
+    if (k != null && !k.airbag) return airbagByIdentification(info);
+    return looksLikeAirbag(info, dtcs) ||
+        (k?.airbag == true && systemName.isEmpty);
+  }
 
   /// Whether the airbag flag came only from the address table.
   bool get airbagByAddressOnly =>
       isAirbag && !looksLikeAirbag(info, dtcs);
+
+  List<Dtc> get activeDtcs => dtcs.where((d) => d.isActive).toList();
+  int get inactiveCount => dtcs.length - activeDtcs.length;
   bool get isPowertrain => bits == 11
       ? isPowertrain11(reqId)
       : powertrain29Targets.contains((reqId >> 8) & 0xFF);
