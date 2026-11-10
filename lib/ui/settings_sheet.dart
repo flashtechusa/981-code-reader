@@ -195,6 +195,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               'Clear SRS never touches these.',
               style: TextStyle(fontSize: 12),
             ),
+          ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('Adapter has HS / MS-CAN switch'),
@@ -204,7 +205,6 @@ class _SettingsSheetState extends State<_SettingsSheet> {
                 'scanned too.'),
             value: _msSwitch,
             onChanged: (v) => setState(() => _msSwitch = v),
-          ),
           ),
           const SizedBox(height: 10),
           Row(
