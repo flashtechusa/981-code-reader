@@ -11,6 +11,7 @@ import 'package:boxster_srs/core/obd_pids.dart';
 import 'package:boxster_srs/core/scanner.dart';
 import 'package:boxster_srs/core/transport.dart';
 import 'package:boxster_srs/core/uds.dart';
+import 'package:boxster_srs/core/vin.dart';
 import 'package:boxster_srs/core/units.dart';
 import 'package:boxster_srs/core/known_modules.dart';
 import 'package:boxster_srs/core/legacy_obd.dart';
@@ -46,6 +47,7 @@ void main() {
   _makeAgnosticTests();
   _legacyTests();
   _fordCodeTextTests();
+  _vinFirstScanTests();
 
   group('fake adapter (ported Python test)', () {
     test('TesterPresent answers 7E 00', () async {
@@ -254,7 +256,8 @@ void main() {
       t.sent.clear();
       await elm.setTarget(0x715, wideFilter: true);
       expect(elm.respId, isNull);
-      expect(t.sent, equals(['ATSH715', 'ATCF700', 'ATCM700']));
+      // ATSH715 is already set: only the receive filter changes.
+      expect(t.sent, equals(['ATCF700', 'ATCM700']));
     });
 
     test('29-bit exact and wide', () async {
@@ -268,7 +271,68 @@ void main() {
       expect(t.sent, equals(['ATCP18', 'ATSHDA15F1', 'ATCRA18DAF115']));
       t.sent.clear();
       await elm.setTarget(0x18DA15F1, wideFilter: true);
-      expect(t.sent, equals(['ATCP18', 'ATSHDA15F1', 'ATCF18DAF100', 'ATCM1FFFFF00']));
+      // ATCP18 and ATSHDA15F1 are already set: only the filter changes.
+      expect(t.sent, equals(['ATCF18DAF100', 'ATCM1FFFFF00']));
+    });
+
+    test('unchanged addressing is not re-sent while sweeping', () async {
+      final t = MockTransport((_) => 'OK\r>', latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      t.sent.clear();
+      await elm.setTarget(0x726, wideFilter: true);
+      expect(t.sent, equals(['ATSH726', 'ATCF700', 'ATCM700']));
+      t.sent.clear();
+      await elm.setTarget(0x727, wideFilter: true);
+      expect(t.sent, equals(['ATSH727']), reason: 'filter unchanged');
+      t.sent.clear();
+      await elm.setTarget(0x727, wideFilter: true);
+      expect(t.sent, isEmpty, reason: 'nothing changed');
+      // A protocol change forgets everything: all of it is sent again.
+      await elm.setBits(11);
+      t.sent.clear();
+      await elm.setTarget(0x727, wideFilter: true);
+      expect(t.sent, equals(['ATSH727', 'ATCF700', 'ATCM700']));
+      // 29-bit sweep: only the header changes per target.
+      await elm.setBits(29);
+      t.sent.clear();
+      await elm.setTarget(0x18DA40F1, wideFilter: true);
+      await elm.setTarget(0x18DA41F1, wideFilter: true);
+      expect(t.sent, equals(['ATCP18', 'ATSHDA40F1', 'ATCF18DAF100',
+          'ATCM1FFFFF00', 'ATSHDA41F1']));
+    });
+
+    test('a command the adapter did not OK is sent again next time', () async {
+      var first = true;
+      final t = MockTransport((c) {
+        if (c == 'ATSH726' && first) {
+          first = false;
+          return 'NO DATA\r>'; // late answer of the previous probe
+        }
+        return 'OK\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      await elm.setTarget(0x726, wideFilter: true);
+      t.sent.clear();
+      await elm.setTarget(0x726, wideFilter: true);
+      expect(t.sent, equals(['ATSH726']));
+    });
+
+    test('exact filter after wide (and back) is always re-sent', () async {
+      final t = MockTransport((_) => 'OK\r>', latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      await elm.setTarget(0x726, wideFilter: true);
+      t.sent.clear();
+      await elm.setTarget(0x726, resp: 0x72E);
+      expect(t.sent, equals(['ATCRA72E']));
+      t.sent.clear();
+      await elm.setTarget(0x726, wideFilter: true);
+      expect(t.sent, equals(['ATCF700', 'ATCM700']));
     });
 
     test('ATST units of 4 ms, clamped', () {
@@ -814,6 +878,108 @@ void _fordCodeTextTests() {
         expect(makeCodeTextFromString(makeCodeTextToString(m)), m);
       }
       expect(makeCodeTextFromString(null), MakeCodeText.auto);
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// VIN first, then a targeted scan on Ford / Lincoln / Mercury
+// ---------------------------------------------------------------------------
+void _vinFirstScanTests() {
+  group('decodeVin', () {
+    test('F-150, Boxster, Maserati, Mazda', () {
+      final f = decodeVin('1FTEW1EG5FFA12345')!;
+      expect(f.make, 'Ford');
+      expect(f.modelYear, 2015);
+      expect(f.isFordGroup, isTrue);
+      expect(f.summary, '2015 Ford');
+      final p = decodeVin('wp0ca2a85ek100000')!;
+      expect(p.make, 'Porsche');
+      expect(p.modelYear, 2014);
+      expect(p.isFordGroup, isFalse);
+      final m = decodeVin('ZAMBC38A040012345')!; // 7th char numeric
+      expect(m.make, 'Maserati');
+      expect(m.modelYear, 2004);
+      final z = decodeVin('JM1BL1V75C1234567')!;
+      expect(z.make, 'Mazda');
+      expect(z.isFordGroup, isFalse, reason: 'Mazda gets the full scan');
+      expect(decodeVin('5LMJJ2LT0KEL12345')!.make, 'Lincoln');
+      expect(decodeVin('2MEFM74W9XX123456')!.make, 'Mercury');
+    });
+    test('rejects junk; unknown WMI still decodes the year', () {
+      expect(decodeVin(null), isNull);
+      expect(decodeVin('NO DATA'), isNull);
+      expect(decodeVin('1FTEW1EG5FFA1234'), isNull); // 16 chars
+      expect(decodeVin('1FTEW1EG5FFA1234O'), isNull); // O not allowed
+      final u = decodeVin('XXXAA1A11F1234567')!;
+      expect(u.make, isNull);
+      expect(u.summary, '2015 unknown make (WMI XXX)');
+    });
+  });
+
+  group('targeted Ford scan', () {
+    // Scripted F-150: PCM answers 22 F190 with a multi-frame VIN, the BCM
+    // at 0x726 answers TesterPresent, everything else is silent.
+    (MockTransport, Elm327, Uds) truck() {
+      var sh = '';
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('ATSH')) {
+          sh = c.substring(4);
+          return 'OK\r>';
+        }
+        if (c.startsWith('AT')) return 'OK\r>';
+        if (sh == '7E0' && c.startsWith('03 22 F1 90')) {
+          return '7E8 10 14 62 F1 90 31 46 54\r'
+              '7E8 21 45 57 31 45 47 35 46\r'
+              '7E8 22 46 41 31 32 33 34 35\r>';
+        }
+        if (sh == '726' && c.startsWith('02 3E 00')) {
+          return '72E 02 7E 00 00 00 00 00 00\r>';
+        }
+        return 'NO DATA\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      return (t, elm, Uds(elm));
+    }
+
+    test('VIN is read from 0x7E0 with 22 F190 (read-only)', () async {
+      final (t, elm, uds) = truck();
+      await elm.open();
+      final vin = await Scanner(elm, uds).readVin();
+      expect(vin, '1FTEW1EG5FFA12345');
+      expect(t.sent, contains('03 22 F1 90 00 00 00 00'));
+      expect(t.sent, contains('ATSH7E0'));
+    });
+
+    test('Ford address list: known Ford + OBD-II entries only', () {
+      final hs = Scanner.fordAddresses(CanBus.hs);
+      expect(hs, containsAll([0x726, 0x737, 0x760, 0x7D0, 0x7E0]));
+      expect(hs, isNot(contains(0x715)), reason: 'VW airbag address');
+      expect(Scanner.fordAddresses(CanBus.ms), contains(0x744));
+    });
+
+    test('probes only the given addresses, no 29-bit sweep', () async {
+      final (t, elm, uds) = truck();
+      await elm.open();
+      final scanner = Scanner(elm, uds);
+      final addresses = Scanner.fordAddresses(CanBus.hs);
+      List<Module> found = const [];
+      await for (final p in scanner.run(addresses: addresses)) {
+        if (p.phase == 'done') found = p.found!;
+      }
+      expect(found.map((m) => m.address).toList(), ['726']);
+      expect(t.sent.where((c) => c.startsWith('ATCP')), isEmpty,
+          reason: 'no 29-bit addressing at all');
+      expect(t.sent, isNot(contains('ATSH700')),
+          reason: 'no full 11-bit sweep');
+      expect(t.sent, isNot(contains('ATSH7E0')),
+          reason: 'powertrain still behind the setting');
+      final probed = t.sent
+          .where((c) => c.startsWith('ATSH'))
+          .map((c) => int.parse(c.substring(4), radix: 16))
+          .toSet();
+      expect(probed.every(addresses.contains), isTrue);
     });
   });
 }

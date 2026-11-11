@@ -14,6 +14,7 @@ import '../core/obd_pids.dart';
 import '../core/scanner.dart';
 import '../core/transport.dart';
 import '../core/uds.dart';
+import '../core/vin.dart';
 import 'settings.dart';
 
 /// `--dart-define=MOCK=true` swaps the TCP socket for the scripted adapter.
@@ -74,6 +75,13 @@ class Session extends ChangeNotifier {
   Uds? get uds => _uds;
 
   final List<Module> modules = <Module>[];
+
+  /// VIN-derived identity, read before the scan (null: not read / no answer).
+  VehicleId? vehicle;
+
+  /// Targeted (Ford known-address) scan instead of the full sweep?
+  bool get _targetedScan =>
+      !settings.fullScan && (vehicle?.isFordGroup ?? false);
   final List<LogEntry> log = <LogEntry>[];
 
   /// Lines shown in the monospace results pane of the home screen.
@@ -97,7 +105,10 @@ class Session extends ChangeNotifier {
   /// Settings choice plus every VIN the modules reported (Ford / Lincoln /
   /// Mercury = confirmed; Mazda or MS-CAN-only = shown but NOT confirmed).
   FordTextLevel get fordLevel => fordTextLevel(settings.codeText,
-      vins: modules.map((m) => m.info['VIN']).whereType<String>(),
+      vins: [
+        if (vehicle != null) vehicle!.vin,
+        ...modules.map((m) => m.info['VIN']).whereType<String>(),
+      ],
       hasMsCanModules: modules.any((m) => m.bus == CanBus.ms));
 
   /// Plain-English text for [d] on this vehicle.
@@ -204,6 +215,7 @@ class Session extends ChangeNotifier {
       await e.close();
     }
     modules.clear();
+    vehicle = null;
     state = ConnState.disconnected;
     busy = false;
     try {
@@ -233,11 +245,32 @@ class Session extends ChangeNotifier {
     busy = true;
     stopLive();
     clearOutput();
-    say('Scanning diagnostic CAN (read-only) ...');
     try {
+      _setStatus('reading VIN');
+      say('Reading VIN from the engine computer (0x7E0, 22 F190) ...');
+      final vin = await _scanner!.readVin();
+      vehicle = decodeVin(vin);
+      if (vehicle == null) {
+        say('  no VIN answer - scanning every address.');
+      } else {
+        say('  VIN ${vehicle!.vin}  ->  ${vehicle!.summary}');
+      }
+      final addresses = _targetedScan
+          ? Scanner.fordAddresses(CanBus.hs)
+              .where((a) => settings.includePowertrain || !isPowertrain11(a))
+              .toList()
+          : null;
+      if (addresses != null) {
+        say('${vehicle!.make}: probing the ${addresses.length} known Ford '
+            'module addresses only (Settings > Full address sweep to probe '
+            'everything).');
+      } else {
+        say('Scanning diagnostic CAN, every address (read-only) ...');
+      }
       final found = <Module>[];
       await for (final p in _scanner!.run(
-          includePowertrain: settings.includePowertrain)) {
+          includePowertrain: settings.includePowertrain,
+          addresses: addresses)) {
         if (p.phase == 'done') {
           found.addAll(p.found ?? const []);
         } else if (p.phase == 'identified') {
@@ -274,11 +307,15 @@ class Session extends ChangeNotifier {
     adapterBus = CanBus.ms;
     stopLive();
     say('');
-    say('Scanning MS-CAN (125 kbps, read-only) ...');
+    final addresses = _targetedScan ? Scanner.fordAddresses(CanBus.ms) : null;
+    say(addresses == null
+        ? 'Scanning MS-CAN (125 kbps, read-only), every address ...'
+        : 'Scanning MS-CAN (125 kbps, read-only), ${addresses.length} known '
+            'Ford addresses ...');
     try {
       final found = <Module>[];
-      await for (final p
-          in _scanner!.run(includePowertrain: true, bus: CanBus.ms)) {
+      await for (final p in _scanner!.run(
+          includePowertrain: true, bus: CanBus.ms, addresses: addresses)) {
         if (p.phase == 'done') {
           found.addAll(p.found ?? const []);
         } else if (p.phase == 'identified') {

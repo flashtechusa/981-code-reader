@@ -1,3 +1,4 @@
+import 'dtc_text.dart';
 import 'elm327.dart';
 import 'hex.dart';
 import 'known_modules.dart';
@@ -34,14 +35,48 @@ class Scanner {
   bool _cancel = false;
   void cancel() => _cancel = true;
 
+  /// Reads the VIN (UDS 22 F190, read-only, on the allow-list) from the
+  /// engine computer at 0x7E0 on HS-CAN. Null when it does not answer with a
+  /// plausible 17-character VIN. Used to plan the scan before probing.
+  Future<String?> readVin() async {
+    elm.bus = CanBus.hs;
+    await elm.setBits(11);
+    await elm.setTimeoutMs(400);
+    await elm.setTarget(dmeRequest11, resp: dmeResponse11);
+    try {
+      final raw = await uds.readDid(0xF190);
+      final vin = asciiOrHex(raw).trim().toUpperCase();
+      return looksLikeVin(vin) ? vin : null;
+    } on UdsException {
+      return null;
+    }
+  }
+
+  /// 11-bit addresses worth probing on a Ford / Lincoln / Mercury: the
+  /// known-address table for that bus (lib/core/known_modules.dart).
+  static List<int> fordAddresses(CanBus bus) => [
+        ...(bus == CanBus.ms ? knownModulesMs : knownModules11)
+            .entries
+            .where((e) => e.value.make == 'Ford' || e.value.make == 'OBD-II')
+            .map((e) => e.key),
+      ]..sort();
+
   /// Runs the scan and emits progress. The final event has phase 'done' and
   /// carries the found modules (identified, with DTCs read).
+  ///
+  /// [addresses] null: full sweep (every 11-bit id, known-address second
+  /// pass, then every 29-bit target on HS). Non-null: targeted scan - only
+  /// those 11-bit ids, each given the second-pass treatment straight away,
+  /// no 29-bit sweep (used when the VIN says the car is a Ford).
   Stream<ScanProgress> run(
-      {bool includePowertrain = false, CanBus bus = CanBus.hs}) async* {
+      {bool includePowertrain = false,
+      CanBus bus = CanBus.hs,
+      List<int>? addresses}) async* {
     _cancel = false;
     final found = <Module>[];
     const probe = Duration(milliseconds: 400);
     final ms = bus == CanBus.ms;
+    final targeted = addresses != null;
     String label(int rid) {
       final k = ms ? knownModulesMs[rid] : knownModules11[rid];
       return k == null ? '' : '  ${k.abbr} - ${k.name}';
@@ -52,12 +87,15 @@ class Scanner {
     await elm.setBits(11);
     await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
     final candidates11 = <int>[];
-    for (var rid = 0x700; rid < 0x800; rid++) {
+    for (final rid in addresses ??
+        [for (var r = 0x700; r < 0x800; r++) r]) {
+      if (rid < 0x700 || rid > 0x7FF) continue;
       if (rid == functional11 || isResponse11(rid)) continue;
       if (isPowertrain11(rid) && !includePowertrain) continue;
       candidates11.add(rid);
     }
-    final total = candidates11.length + 256;
+    final planned = candidates11.length + (targeted || ms ? 0 : 256);
+    final total = planned == 0 ? 1 : planned;
     var step = 0;
     for (final rid in candidates11) {
       if (_cancel) break;
@@ -92,7 +130,8 @@ class Scanner {
     if (!_cancel) {
       await elm.setTimeoutMs(250);
       final have = found.map((m) => m.reqId).toSet();
-      for (final rid in (ms ? knownModulesMs : knownModules11).keys) {
+      for (final rid
+          in targeted ? candidates11 : (ms ? knownModulesMs : knownModules11).keys) {
         if (_cancel) break;
         if (have.contains(rid) || rid == functional11) continue;
         if (isPowertrain11(rid) && !includePowertrain) continue;
@@ -121,8 +160,8 @@ class Scanner {
 
     found.sort((a, b) => a.reqId.compareTo(b.reqId));
 
-    // ---- 29-bit normal fixed (tester = 0xF1) - HS-CAN only -------------
-    if (!_cancel && !ms) {
+    // ---- 29-bit normal fixed (tester = 0xF1) - HS-CAN, full scan only ----
+    if (!_cancel && !ms && !targeted) {
       await elm.setBits(29);
       await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
       for (var ta = 0x00; ta < 0x100; ta++) {

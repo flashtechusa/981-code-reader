@@ -23,6 +23,7 @@ class Settings extends ChangeNotifier {
   VehicleBus _bus = VehicleBus.can;
   bool _hasMsSwitch = true; // bbfly / OBDLink MX style HS/MS switch
   MakeCodeText _codeText = MakeCodeText.auto;
+  bool _fullScan = false; // false: targeted scan when the VIN says Ford
 
   String get host => _host;
   int get port => _port;
@@ -32,6 +33,7 @@ class Settings extends ChangeNotifier {
   bool get legacyBus => _bus == VehicleBus.legacy;
   bool get hasMsSwitch => _hasMsSwitch;
   MakeCodeText get codeText => _codeText;
+  bool get fullScan => _fullScan;
   Units get units => Units(_unitSystem);
 
   Future<void> load() async {
@@ -44,6 +46,7 @@ class Settings extends ChangeNotifier {
       _bus = p.getString('bus') == 'legacy' ? VehicleBus.legacy : VehicleBus.can;
       _hasMsSwitch = p.getBool('hasMsSwitch') ?? true;
       _codeText = makeCodeTextFromString(p.getString('codeText'));
+      _fullScan = p.getBool('fullScan') ?? false;
     } catch (_) {
       // keep defaults
     }
@@ -58,6 +61,7 @@ class Settings extends ChangeNotifier {
     VehicleBus? bus,
     bool? hasMsSwitch,
     MakeCodeText? codeText,
+    bool? fullScan,
   }) async {
     if (host != null && host.trim().isNotEmpty) _host = host.trim();
     if (port != null && port > 0 && port < 65536) _port = port;
@@ -66,6 +70,7 @@ class Settings extends ChangeNotifier {
     if (bus != null) _bus = bus;
     if (hasMsSwitch != null) _hasMsSwitch = hasMsSwitch;
     if (codeText != null) _codeText = codeText;
+    if (fullScan != null) _fullScan = fullScan;
     notifyListeners();
     try {
       final p = await SharedPreferences.getInstance();
@@ -76,6 +81,7 @@ class Settings extends ChangeNotifier {
       await p.setString('bus', _bus == VehicleBus.legacy ? 'legacy' : 'can');
       await p.setBool('hasMsSwitch', _hasMsSwitch);
       await p.setString('codeText', makeCodeTextToString(_codeText));
+      await p.setBool('fullScan', _fullScan);
     } catch (_) {
       // persistence is best-effort
     }

@@ -28,6 +28,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late UnitSystem _units;
   late VehicleBus _bus;
   late bool _msSwitch;
+  late bool _fullScan;
   late MakeCodeText _codeText;
 
   @override
@@ -40,6 +41,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _units = s.unitSystem;
     _bus = s.bus;
     _msSwitch = s.hasMsSwitch;
+    _fullScan = s.fullScan;
     _codeText = s.codeText;
   }
 
@@ -60,6 +62,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
       unitSystem: _units,
       bus: _bus,
       hasMsSwitch: _msSwitch,
+      fullScan: _fullScan,
       codeText: _codeText,
     );
     if (mounted) Navigator.of(context).pop();
@@ -207,6 +210,18 @@ class _SettingsSheetState extends State<_SettingsSheet> {
                 'scanned too.'),
             value: _msSwitch,
             onChanged: (v) => setState(() => _msSwitch = v),
+          ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Full address sweep'),
+            subtitle: const Text(
+                'Off: the VIN is read first; on a Ford, Lincoln or Mercury only '
+                'the known Ford module addresses are probed (seconds instead '
+                'of minutes). On: every address on every car - use it if a '
+                'module seems to be missing. Other makes always get the full '
+                'sweep.'),
+            value: _fullScan,
+            onChanged: (v) => setState(() => _fullScan = v),
           ),
           const SizedBox(height: 10),
           Row(

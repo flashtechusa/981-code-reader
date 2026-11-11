@@ -71,6 +71,31 @@ class Elm327 {
   int? reqId;
   int? respId;
 
+  // Addressing state the adapter already holds, so setTarget() only sends the
+  // AT commands that change it (ATSH changes per address while scanning; the
+  // wide receive filter and the 29-bit priority do not). Cleared whenever the
+  // protocol, bus, legacy mode or the adapter itself is reset. Only adapter
+  // configuration is skipped - the CAN frames sent to the car are identical.
+  String? _shState;
+  String? _rxState;
+  String? _cpState;
+
+  void _forgetAddressing() {
+    _shState = null;
+    _rxState = null;
+    _cpState = null;
+  }
+
+  /// Sends [command] unless the adapter already holds it. Remembered only
+  /// when the adapter answered OK (a late "NO DATA" from the previous probe
+  /// can land on an AT command; then it is simply sent again next time).
+  Future<void> _setOnce(String command, String? Function() current,
+      void Function(String?) remember) async {
+    if (current() == command) return;
+    final ok = (await cmd(command)).contains('OK');
+    remember(ok ? command : null);
+  }
+
   /// Last adapter identification (`ATI`) and voltage (`ATRV`).
   String adapterId = '';
   String batteryText = '';
@@ -147,6 +172,7 @@ class Elm327 {
 
   /// Init sequence, verbatim from the reference.
   Future<void> init() async {
+    _forgetAddressing();
     await cmd('ATZ', timeout: const Duration(seconds: 3));
     await Future<void>.delayed(const Duration(milliseconds: 500));
     await cmd('ATE0');
@@ -174,6 +200,7 @@ class Elm327 {
   /// ISO 15765-4 CAN 500 kbps: protocol 6 = 11-bit, 7 = 29-bit.
   Future<void> setBits(int b) async {
     if (legacy) await leaveLegacy();
+    _forgetAddressing();
     bits = b;
     if (bus == CanBus.ms) {
       // MS-CAN is 11-bit only on every Ford we know of.
@@ -194,6 +221,7 @@ class Elm327 {
   /// Switch to legacy OBD-II: protocol auto (`ATSP0`), formatted output,
   /// adaptive timing on (K-line inter-byte timing varies a lot).
   Future<void> enterLegacy() async {
+    _forgetAddressing();
     legacy = true;
     reqId = null;
     respId = null;
@@ -206,6 +234,7 @@ class Elm327 {
 
   /// Back to the raw-frame CAN configuration used by the UDS code.
   Future<void> leaveLegacy() async {
+    _forgetAddressing();
     legacy = false;
     legacyProtocol = '';
     await cmd('ATCAF0');
@@ -261,32 +290,47 @@ class Elm327 {
   /// Point the adapter at one ECU. Port of `set_target()`.
   ///   11-bit: ATSH 7xx; receive filter exact (ATCRA) or wide (0x700-0x7FF)
   ///   29-bit: ATCP 18 + ATSH DAxxF1; receive 18DAF1xx or wide (any 18DAF1xx)
+  /// Commands the adapter already holds are not re-sent (see _shState).
   Future<void> setTarget(int req, {int? resp, bool wideFilter = false}) async {
     reqId = req;
+    String? sh() => _shState;
+    String? rx() => _rxState;
+    void setSh(String? v) => _shState = v;
+    void setRx(String? v) => _rxState = v;
     if (bits == 11) {
-      await cmd('ATSH${hexN(req, 3)}');
+      await _setOnce('ATSH${hexN(req, 3)}', sh, setSh);
       if (wideFilter) {
-        await cmd('ATCF700');
-        await cmd('ATCM700');
+        // ATCF and ATCM always travel together; cached as one state.
+        if (_rxState != 'WIDE11') {
+          final a = await cmd('ATCF700');
+          final b = await cmd('ATCM700');
+          _rxState = a.contains('OK') && b.contains('OK') ? 'WIDE11' : null;
+        }
         respId = null;
       } else {
         respId = resp ?? (req + 8);
-        await cmd('ATCRA${hexN(respId!, 3)}');
+        await _setOnce('ATCRA${hexN(respId!, 3)}', rx, setRx);
       }
     } else {
       final prio = (req >> 24) & 0xFF;
       final lo = req & 0xFFFFFF;
-      await cmd('ATCP${hexN(prio, 2)}');
-      await cmd('ATSH${hexN(lo, 6)}');
+      await _setOnce('ATCP${hexN(prio, 2)}', () => _cpState,
+          (String? v) => _cpState = v);
+      await _setOnce('ATSH${hexN(lo, 6)}', sh, setSh);
       final target = (req >> 8) & 0xFF;
       final source = req & 0xFF;
       if (wideFilter) {
-        await cmd('ATCF${hexN((prio << 24) | 0x00DA0000 | (source << 8), 8)}');
-        await cmd('ATCM1FFFFF00');
+        final cf = 'ATCF${hexN((prio << 24) | 0x00DA0000 | (source << 8), 8)}';
+        if (_rxState != 'WIDE29 $cf') {
+          final a = await cmd(cf);
+          final b = await cmd('ATCM1FFFFF00');
+          _rxState =
+              a.contains('OK') && b.contains('OK') ? 'WIDE29 $cf' : null;
+        }
         respId = null;
       } else {
         respId = (prio << 24) | 0x00DA0000 | (source << 8) | target;
-        await cmd('ATCRA${hexN(respId!, 8)}');
+        await _setOnce('ATCRA${hexN(respId!, 8)}', rx, setRx);
       }
     }
   }
