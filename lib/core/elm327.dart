@@ -355,8 +355,39 @@ class Elm327 {
       frame.add(0x00);
     }
     final text = await cmd(toHex(frame), timeout: timeout);
-    return parseFrames(text, bits);
+    var (out, short) = parseFramesDetail(text, bits);
+    if (short.isEmpty) return out;
+
+    // With ATCAF0 some adapters (the bbfly clone, seen on the 981) never send
+    // the ISO-TP Flow Control, so only the First Frame of a multi-frame answer
+    // arrives. With exactly one physical target, send it ourselves to that
+    // target (ATSH is already its request id): ContinueToSend, block size 0
+    // (send everything), STmin 20 ms so the Wi-Fi adapter's buffer keeps up.
+    // It is transport only - no service byte - and stays inside this method,
+    // i.e. inside the Uds.request() choke point.
+    // Only when nothing but the First Frame (6 data bytes) arrived: if
+    // consecutive frames had started, a second Flow Control would be wrong.
+    final rid = respId;
+    final got = rid == null ? null : short[rid];
+    if (short.length == 1 && got != null && got.$1 == 6 && got.$2 > 7) {
+      final frames = (got.$2 - 6 + 6) ~/ 7; // ceil((announced - 6) / 7) CFs due
+      final wait = Duration(milliseconds: 1000 + frames * 30);
+      final more = await cmd(flowControlFrame, timeout: wait);
+      (out, short) = parseFramesDetail('$text\n$more', bits);
+    }
+    if (short.isNotEmpty) {
+      final what = short.entries
+          .map((e) => '0x${e.key.toRadixString(16).toUpperCase()} sent '
+              '${e.value.$1} of ${e.value.$2} bytes')
+          .join(', ');
+      throw ElmException('incomplete multi-frame answer ($what) - '
+          'not decoded rather than shown as empty');
+    }
+    return out;
   }
+
+  /// ISO-TP Flow Control: ContinueToSend, block size 0, STmin 0x14 (20 ms).
+  static const String flowControlFrame = '30 00 14 00 00 00 00 00';
 
   static const _noise = <String>[
     'NO DATA',
@@ -372,7 +403,13 @@ class Elm327 {
   /// Group raw frames by CAN ID and reassemble ISO-TP (SF / FF / CF).
   /// Port of `_parse_frames()`; header is 3 hex chars (11-bit) or 8 (29-bit)
   /// once spaces are removed.
-  static Map<int, Uint8List> parseFrames(String text, int bits) {
+  static Map<int, Uint8List> parseFrames(String text, int bits) =>
+      parseFramesDetail(text, bits).$1;
+
+  /// [parseFrames] plus, per CAN id whose First Frame announced more bytes
+  /// than arrived, (bytes received, bytes announced).
+  static (Map<int, Uint8List>, Map<int, (int, int)>) parseFramesDetail(
+      String text, int bits) {
     final hdrLen = bits == 11 ? 3 : 8;
     final lens = <int, int>{};
     final datas = <int, List<int>>{};
@@ -407,11 +444,13 @@ class Elm327 {
       // pciType 3 = flow control from the ECU - ignore.
     }
     final out = <int, Uint8List>{};
+    final short = <int, (int, int)>{};
     for (final id in order) {
       final d = datas[id]!;
       final n = lens[id]!;
       out[id] = Uint8List.fromList(d.length > n ? d.sublist(0, n) : d);
+      if (d.length < n) short[id] = (d.length, n);
     }
-    return out;
+    return (out, short);
   }
 }

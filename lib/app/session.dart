@@ -487,6 +487,17 @@ class Session extends ChangeNotifier {
   Future<ClearResult?> _clear(Module m, {required bool allowPowertrain}) async {
     if (!_guard()) return null;
     clearOutput();
+    // Last-line guard: a request id shared by several modules is a broadcast
+    // address - a Clear there would reach all of them.
+    final sharing = modules
+        .where((x) => x.reqId == m.reqId && x.bits == m.bits && x.bus == m.bus)
+        .length;
+    if (sharing > 1 || _uds!.learnedBroadcast.contains(m.reqId)) {
+      say('Refused: ${m.address} is answered by $sharing modules (broadcast '
+          'address). Re-run Vehicle; clear each module at its own address.');
+      _setStatus('Refused', error: true);
+      return null;
+    }
     if (_busMismatch(m)) {
       notifyListeners();
       return null;

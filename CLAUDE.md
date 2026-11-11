@@ -17,8 +17,12 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
    RoutineControl, `0x11` ECUReset, `0x34`-`0x38` download/upload,
    `0x10 0x02` programming session. If a module answers NRC `0x33`, report it;
    do not try to satisfy it.
-4. **ClearDiagnosticInformation (0x14)** is refused on `0x7DF` and `0x18DB33F1`
-   always. Powertrain ids (`0x7E0-0x7E7`, 29-bit targets `0x10`/`0x18`) are
+4. **ClearDiagnosticInformation (0x14)** is refused on `0x7DF`, `0x700` (the
+   VW/Porsche broadcast id - 11 modules answered one TesterPresent there on
+   the 981) and `0x18DB33F1` always (`broadcast11`), and on any id the scan
+   saw answered by more than one module (`Uds.learnedBroadcast`; the scanner
+   never makes a module of such an id, `Session._clear` refuses ids shared by
+   several modules). Powertrain ids (`0x7E0-0x7E7`, 29-bit targets `0x10`/`0x18`) are
    refused unless `allowPowertrainClear: true`, which ONLY the per-module
    "Clear codes" button passes (`Session.clearModuleCodes`). The Clear SRS tile
    (`Session.clearSrs`) always passes `false`.
@@ -33,7 +37,12 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
 * Adapter init verbatim: `ATZ` (wait 0.5 s), `ATE0 ATL0 ATS1 ATH1 ATCAF0 ATCFC1
   ATAT0 ATAL`, then `ATI`, `ATRV`. Battery warning < 12.0 V.
 * `ATCAF0` -> raw frames with PCI bytes; we reassemble ISO-TP in
-  `Elm327.parseFrames` (SF/FF/CF per CAN id). Header is 3 hex chars (11-bit) or
+  `Elm327.parseFrames` (SF/FF/CF per CAN id). The bbfly does NOT send ISO-TP
+  flow control in CAF0 (981 log: only First Frames arrived), so
+  `sendFramesAndCollect` sends `30 00 14` itself when exactly one physical
+  target sent only its First Frame (transport frame, no service byte, inside
+  the choke point). Still incomplete -> `ElmException` -> `UdsException`; a
+  failed read shows "codes not read", never "no DTCs stored". Header is 3 hex chars (11-bit) or
   8 (29-bit) after removing spaces. Requests are single-frame, padded to 8 bytes.
 * Addressing (`Elm327.setTarget`): 11-bit `ATSH` + `ATCRA req+8` or wide
   `ATCF700/ATCM700`; 29-bit `ATCP`/`ATSH` + `ATCRA 18DAF1xx` or wide

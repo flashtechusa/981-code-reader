@@ -92,7 +92,10 @@ class ModuleCard extends StatelessWidget {
               ),
             if (showDtcs) ...[
               const Divider(height: 18, color: AppColors.bg),
-              if (m.dtcs.isEmpty)
+              if (m.dtcs.isEmpty && m.note != null)
+                const Text('codes not read - see the error above',
+                    style: TextStyle(color: AppColors.warn))
+              else if (m.dtcs.isEmpty)
                 const Text('no DTCs stored',
                     style: TextStyle(color: AppColors.ok))
               else ...[

@@ -82,6 +82,12 @@ const Map<int, String> identDids = {
 
 /// 11-bit IDs we never clear on, and skip in the default scan.
 const int functional11 = 0x7DF;
+
+/// 11-bit broadcast (functional) request ids: never probed as a module, never
+/// cleared. 0x7DF is OBD-II; 0x700 is the VW / Porsche group's - on the 981 a
+/// single TesterPresent to 0x700 was answered by 11 modules (2026-11-11 log).
+/// A Clear sent there would erase codes in every module that listens.
+const Set<int> broadcast11 = {functional11, 0x700};
 bool isPowertrain11(int id) => id >= 0x7E0 && id < 0x7E8;
 bool isResponse11(int id) => id >= 0x7E8 && id < 0x7F0;
 
@@ -167,6 +173,10 @@ class Uds {
   Uds(this.elm);
   final Elm327 elm;
 
+  /// Request ids the scan saw answered by more than one module - broadcast
+  /// addresses on this car. 0x14 is refused on them like on [broadcast11].
+  final Set<int> learnedBroadcast = <int>{};
+
   /// The single transmit path. Enforces:
   ///  - service ID allow-list
   ///  - Mode 01 only towards the DME request id 0x7E0 (11-bit)
@@ -210,15 +220,25 @@ class Uds {
     }
     if (sid == sidClearDtc) {
       assertClearTargetOk(elm.bits, elm.reqId, allowPowertrainClear);
+      if (learnedBroadcast.contains(elm.reqId)) {
+        throw UdsException(
+            'refusing to clear via 0x${hexN(elm.reqId!, elm.bits == 11 ? 3 : 8)}: '
+            'several modules answer there (broadcast address)');
+      }
     }
-    return elm.sendFramesAndCollect(payload, timeout: timeout);
+    try {
+      return await elm.sendFramesAndCollect(payload, timeout: timeout);
+    } on ElmException catch (e) {
+      throw UdsException(e.message);
+    }
   }
 
   static void assertClearTargetOk(int bits, int? reqId, bool allowPowertrain) {
     if (reqId == null) throw UdsException('no target address set');
     if (bits == 11) {
-      if (reqId == functional11) {
-        throw UdsException('refusing to clear via functional/broadcast ID 0x7DF');
+      if (broadcast11.contains(reqId)) {
+        throw UdsException('refusing to clear via functional/broadcast ID '
+            '0x${hexN(reqId, 3)}');
       }
       if (isPowertrain11(reqId) && !allowPowertrain) {
         throw UdsException(

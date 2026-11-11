@@ -52,6 +52,10 @@ Future<ClearResult> clearModule(
 
   // Pre-flight: the refusal fires before anything is transmitted.
   Uds.assertClearTargetOk(elm.bits, elm.reqId, allowPowertrain);
+  if (uds.learnedBroadcast.contains(elm.reqId)) {
+    throw UdsException('refusing to clear via ${m.address}: several modules '
+        'answer there (broadcast address)');
+  }
 
   // Extended session is usually not required for 0x14 but some ECUs insist.
   // Try it, fall through to default session if refused.

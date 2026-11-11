@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dtc_text.dart';
 import 'elm327.dart';
 import 'hex.dart';
@@ -34,6 +36,24 @@ class Scanner {
 
   bool _cancel = false;
   void cancel() => _cancel = true;
+
+  /// Response ids that answered one probe with one of [sids]. More than one
+  /// means the probed id is a broadcast address on this car (0x700 on the
+  /// 981 was answered by 11 modules): it is remembered in
+  /// [Uds.learnedBroadcast] - so 0x14 is refused there - and never becomes a
+  /// module of its own.
+  static List<int> responders(Map<int, Uint8List> resps, Set<int> sids) => [
+        for (final e in resps.entries)
+          if (e.value.isNotEmpty && sids.contains(e.value[0])) e.key
+      ];
+
+  ScanProgress _broadcast(String id, int n, double fraction, String phase) =>
+      ScanProgress(
+        phase: phase,
+        message: '$id is a broadcast address ($n modules answered) - not a '
+            'module, skipped; each module is found at its own address',
+        fraction: fraction,
+      );
 
   /// Reads the VIN (UDS 22 F190, read-only, on the allow-list) from the
   /// engine computer at 0x7E0 on HS-CAN. Null when it does not answer with a
@@ -90,7 +110,7 @@ class Scanner {
     for (final rid in addresses ??
         [for (var r = 0x700; r < 0x800; r++) r]) {
       if (rid < 0x700 || rid > 0x7FF) continue;
-      if (rid == functional11 || isResponse11(rid)) continue;
+      if (broadcast11.contains(rid) || isResponse11(rid)) continue;
       if (isPowertrain11(rid) && !includePowertrain) continue;
       candidates11.add(rid);
     }
@@ -101,16 +121,19 @@ class Scanner {
       if (_cancel) break;
       await elm.setTarget(rid, wideFilter: true);
       final resps = await uds.request([sidTesterPresent, 0x00], timeout: probe);
-      for (final e in resps.entries) {
-        if (e.value.isNotEmpty && (e.value[0] == 0x7E || e.value[0] == 0x7F)) {
-          found.add(Module(bits: 11, reqId: rid, respId: e.key, bus: bus));
-          yield ScanProgress(
-            phase: 'probe11',
-            message:
-                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered${label(rid)}',
-            fraction: 0.8 * step / total,
-          );
-        }
+      final who = responders(resps, const {0x7E, 0x7F});
+      if (who.length > 1) {
+        uds.learnedBroadcast.add(rid);
+        yield _broadcast(
+            '0x${hexN(rid, 3)}', who.length, 0.8 * step / total, 'probe11');
+      } else if (who.length == 1) {
+        found.add(Module(bits: 11, reqId: rid, respId: who.single, bus: bus));
+        yield ScanProgress(
+          phase: 'probe11',
+          message:
+              '0x${hexN(rid, 3)} -> 0x${hexN(who.single, 3)} answered${label(rid)}',
+          fraction: 0.8 * step / total,
+        );
       }
       step++;
       if (step % 4 == 0) {
@@ -133,27 +156,31 @@ class Scanner {
       for (final rid
           in targeted ? candidates11 : (ms ? knownModulesMs : knownModules11).keys) {
         if (_cancel) break;
-        if (have.contains(rid) || rid == functional11) continue;
+        if (have.contains(rid) ||
+            broadcast11.contains(rid) ||
+            uds.learnedBroadcast.contains(rid)) {
+          continue;
+        }
         if (isPowertrain11(rid) && !includePowertrain) continue;
         await elm.setTarget(rid, wideFilter: true);
         var resps = await uds.request([sidSession, 0x01], timeout: probe);
-        var ok = resps.entries.where((e) =>
-            e.value.isNotEmpty && (e.value[0] == 0x50 || e.value[0] == 0x7F));
-        if (ok.isEmpty) {
+        var who = responders(resps, const {0x50, 0x7F});
+        if (who.isEmpty) {
           resps = await uds.request([sidTesterPresent, 0x00], timeout: probe);
-          ok = resps.entries.where((e) =>
-              e.value.isNotEmpty &&
-              (e.value[0] == 0x7E || e.value[0] == 0x7F));
+          who = responders(resps, const {0x7E, 0x7F});
         }
-        for (final e in ok) {
-          found.add(Module(bits: 11, reqId: rid, respId: e.key, bus: bus));
+        if (who.length > 1) {
+          uds.learnedBroadcast.add(rid);
+          yield _broadcast(
+              '0x${hexN(rid, 3)}', who.length, 0.8 * step / total, 'probe11');
+        } else if (who.length == 1) {
+          found.add(Module(bits: 11, reqId: rid, respId: who.single, bus: bus));
           yield ScanProgress(
             phase: 'probe11',
             message:
-                '0x${hexN(rid, 3)} -> 0x${hexN(e.key, 3)} answered (2nd pass)${label(rid)}',
+                '0x${hexN(rid, 3)} -> 0x${hexN(who.single, 3)} answered (2nd pass)${label(rid)}',
             fraction: 0.8 * step / total,
           );
-          break;
         }
       }
     }
@@ -172,16 +199,18 @@ class Scanner {
         await elm.setTarget(rid, wideFilter: true);
         final resps =
             await uds.request([sidTesterPresent, 0x00], timeout: probe);
-        for (final e in resps.entries) {
-          if (e.value.isNotEmpty &&
-              (e.value[0] == 0x7E || e.value[0] == 0x7F)) {
-            found.add(Module(bits: 29, reqId: rid, respId: e.key));
-            yield ScanProgress(
-              phase: 'probe29',
-              message: '0x${hexN(rid, 8)} -> 0x${hexN(e.key, 8)} answered',
-              fraction: 0.8 * step / total,
-            );
-          }
+        final who = responders(resps, const {0x7E, 0x7F});
+        if (who.length > 1) {
+          uds.learnedBroadcast.add(rid);
+          yield _broadcast(
+              '0x${hexN(rid, 8)}', who.length, 0.8 * step / total, 'probe29');
+        } else if (who.length == 1) {
+          found.add(Module(bits: 29, reqId: rid, respId: who.single));
+          yield ScanProgress(
+            phase: 'probe29',
+            message: '0x${hexN(rid, 8)} -> 0x${hexN(who.single, 8)} answered',
+            fraction: 0.8 * step / total,
+          );
         }
         if (ta % 4 == 0) {
           yield ScanProgress(
@@ -209,7 +238,7 @@ class Scanner {
         message:
             '[${m.address}] ${m.displayName}${m.partNumber.isNotEmpty && m.systemName.isNotEmpty ? '  ${m.partNumber}' : ''}'
             '${m.isAirbag ? '  <== AIRBAG' : ''}  '
-            '${m.activeDtcs.isEmpty ? 'no active faults' : '${m.activeDtcs.length} active fault(s)'}',
+            '${m.note != null ? 'codes not read: ${m.note}' : m.activeDtcs.isEmpty ? 'no active faults' : '${m.activeDtcs.length} active fault(s)'}',
         fraction: 0.8 + 0.2 * (i + 1) / found.length,
       );
     }
@@ -234,6 +263,9 @@ class Scanner {
       m.dtcs = await uds.readDtcs();
       m.note = null;
     } on UdsException catch (e) {
+      // Unknown, not empty: never leave old codes (or "no DTCs") standing
+      // after a read that failed. The card shows "codes not read".
+      m.dtcs = <Dtc>[];
       m.note = e.message;
     }
   }

@@ -48,6 +48,7 @@ void main() {
   _legacyTests();
   _fordCodeTextTests();
   _vinFirstScanTests();
+  _porscheLogTests();
 
   group('fake adapter (ported Python test)', () {
     test('TesterPresent answers 7E 00', () async {
@@ -980,6 +981,141 @@ void _vinFirstScanTests() {
           .map((c) => int.parse(c.substring(4), radix: 16))
           .toSet();
       expect(probed.every(addresses.contains), isTrue);
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Regressions from the first 981 log (2026-11-11): 0x700 broadcast and
+// multi-frame answers the adapter would not complete
+// ---------------------------------------------------------------------------
+void _porscheLogTests() {
+  group('broadcast addresses', () {
+    test('0x14 to 0x700 (VW/Porsche broadcast) refused, nothing sent',
+        () async {
+      final (elm, uds, t) = await connectFake();
+      await elm.setTarget(0x700, resp: 0x77F);
+      final before = t.sent.length;
+      await expectLater(uds.request([sidClearDtc, 0xFF, 0xFF, 0xFF]),
+          throwsA(isA<UdsException>()));
+      expect(t.sent.length, equals(before));
+    });
+
+    test('0x14 refused on an id the scan learned is a broadcast', () async {
+      final (elm, uds, t) = await connectFake();
+      uds.learnedBroadcast.add(0x70A);
+      await elm.setTarget(0x70A, resp: 0x774);
+      final before = t.sent.length;
+      await expectLater(uds.request([sidClearDtc, 0xFF, 0xFF, 0xFF]),
+          throwsA(isA<UdsException>()));
+      expect(t.sent.length, equals(before));
+      final m = Module(bits: 11, reqId: 0x70A, respId: 0x774);
+      await expectLater(clearModule(elm, uds, m),
+          throwsA(isA<UdsException>()));
+      expect(t.sent.where((c) => c.startsWith('04 14')), isEmpty);
+    });
+
+    test('an id answered by several modules is not a module', () async {
+      var sh = '';
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('ATSH')) {
+          sh = c.substring(4);
+          return 'OK\r>';
+        }
+        if (c.startsWith('AT')) return 'OK\r>';
+        if (c.startsWith('02 3E 00') && sh == '70A') {
+          return '774 02 7E 00 00 00 00 00 00\r'
+              '775 02 7E 00 00 00 00 00 00\r>';
+        }
+        if (c.startsWith('02 3E 00') && sh == '70B') {
+          return '775 02 7E 00 00 00 00 00 00\r>';
+        }
+        return 'NO DATA\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      final uds = Uds(elm);
+      List<Module> found = const [];
+      final msgs = <String>[];
+      await for (final p in Scanner(elm, uds).run()) {
+        msgs.add(p.message);
+        if (p.phase == 'done') found = p.found!;
+      }
+      expect(found.map((m) => m.address).toList(), ['70B']);
+      expect(uds.learnedBroadcast, contains(0x70A));
+      expect(msgs.any((m) => m.contains('0x70A is a broadcast address')),
+          isTrue);
+      expect(t.sent, isNot(contains('ATSH700')), reason: '0x700 never probed');
+    });
+  });
+
+  group('multi-frame answers (ATCAF0, adapter sends no flow control)', () {
+    const ff = '77D 10 0F 59 02 1B 80 34 08\r>';
+    const cfs = '77D 21 2F 80 35 08 2F 80 36\r'
+        '77D 22 08 2F 00 00 00 00 00\r>';
+
+    test('sends ISO-TP flow control once and decodes every DTC', () async {
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('AT')) return 'OK\r>';
+        if (c.startsWith('03 19 02 FF')) return ff;
+        if (c == Elm327.flowControlFrame) return cfs;
+        return 'NO DATA\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      await elm.setTarget(0x713, resp: 0x77D);
+      final dtcs = await Uds(elm).readDtcs();
+      expect(dtcs.map((d) => d.raw).toList(), ['803408', '803508', '803608']);
+      expect(t.sent.where((c) => c == Elm327.flowControlFrame).length, 1);
+      expect(t.sent.last, Elm327.flowControlFrame);
+    });
+
+    test('still incomplete -> error, never "no DTCs"', () async {
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('AT')) return 'OK\r>';
+        if (c.startsWith('03 19 02 FF')) return ff;
+        return 'NO DATA\r>'; // module gave up waiting
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      await elm.setTarget(0x713, resp: 0x77D);
+      await expectLater(
+          Uds(elm).readDtcs(),
+          throwsA(isA<UdsException>().having(
+              (e) => e.message, 'message', contains('incomplete'))));
+      final m = Module(bits: 11, reqId: 0x713, respId: 0x77D);
+      await Scanner(elm, Uds(elm)).refreshModule(m, identify: false);
+      expect(m.dtcs, isEmpty);
+      expect(m.note, contains('incomplete'));
+    });
+
+    test('complete multi-frame answer: no flow control sent', () async {
+      final (_, uds, t) = await connectFake();
+      final dtcs = await uds.readDtcs();
+      expect(dtcs, hasLength(2));
+      expect(t.sent, isNot(contains(Elm327.flowControlFrame)));
+    });
+
+    test('pending (0x78) then First Frame is completed too', () async {
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('AT')) return 'OK\r>';
+        if (c.startsWith('03 19 02 FF')) {
+          return '77D 03 7F 19 78 AA AA AA AA\r$ff';
+        }
+        if (c == Elm327.flowControlFrame) return cfs;
+        return 'NO DATA\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      await elm.setBits(11);
+      await elm.setTarget(0x713, resp: 0x77D);
+      expect(await Uds(elm).readDtcs(), hasLength(3));
     });
   });
 }
