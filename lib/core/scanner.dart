@@ -36,6 +36,11 @@ class Scanner {
 
   bool _cancel = false;
   void cancel() => _cancel = true;
+  bool get cancelled => _cancel;
+
+  /// Clear a previous stop before a new scan (Session calls this first so a
+  /// STOP pressed during the VIN read is not lost).
+  void reset() => _cancel = false;
 
   /// Response ids that answered one probe with one of [sids]. More than one
   /// means the probed id is a broadcast address on this car (0x700 on the
@@ -58,19 +63,49 @@ class Scanner {
   /// Reads the VIN (UDS 22 F190, read-only, on the allow-list) from the
   /// engine computer at 0x7E0 on HS-CAN. Null when it does not answer with a
   /// plausible 17-character VIN. Used to plan the scan before probing.
-  Future<String?> readVin() async {
+  ///
+  /// Tries the engine computer, then the Ford body module and cluster (Ford
+  /// BCM/IPC hold the VIN too). Each is read in raw mode first; if the answer
+  /// arrives cut short (the adapter does not request the rest in ATCAF0 mode
+  /// and the phone's own request can be too late), it is read again with the
+  /// adapter doing the ISO-TP framing (Elm327.setAutoFormatting). [onNote]
+  /// gets one line per failed attempt with the reason, for the log.
+  Future<String?> readVin({void Function(String line)? onNote}) async {
     elm.bus = CanBus.hs;
     await elm.setBits(11);
-    await elm.setTimeoutMs(400);
-    await elm.setTarget(dmeRequest11, resp: dmeResponse11);
-    try {
-      final raw = await uds.readDid(0xF190);
-      final vin = asciiOrHex(raw).trim().toUpperCase();
-      return looksLikeVin(vin) ? vin : null;
-    } on UdsException {
-      return null;
+    for (final req in vinHolders) {
+      if (_cancel) return null;
+      for (final adapterFraming in const [false, true]) {
+        await elm.setTimeoutMs(400);
+        await elm.setTarget(req, resp: req + 8);
+        var why = 'no answer';
+        try {
+          if (adapterFraming) await elm.setAutoFormatting(true);
+          final raw = await uds.readDid(0xF190);
+          final vin = asciiOrHex(raw).trim().toUpperCase();
+          if (looksLikeVin(vin)) {
+            onNote?.call('  VIN read from 0x${hexN(req, 3)}'
+                '${adapterFraming ? ' (adapter flow control)' : ''}');
+            return vin;
+          }
+          why = raw.isEmpty ? 'no answer' : 'answer is not a VIN: $vin';
+        } on UdsException catch (e) {
+          why = e.message;
+        } finally {
+          if (adapterFraming) await elm.setAutoFormatting(false);
+        }
+        onNote?.call('  0x${hexN(req, 3)}'
+            '${adapterFraming ? ' (adapter flow control)' : ''}: $why');
+        // Only a cut-short answer is worth a second try with adapter framing.
+        if (!why.contains('incomplete')) break;
+      }
     }
+    return null;
   }
+
+  /// Where the VIN is asked for, in order: engine computer, Ford BCM, Ford
+  /// cluster. All reads (22 F190) - nothing is written.
+  static const List<int> vinHolders = [0x7E0, 0x726, 0x720];
 
   /// 11-bit addresses worth probing on a Ford / Lincoln / Mercury: the
   /// known-address table for that bus (lib/core/known_modules.dart).
@@ -91,8 +126,8 @@ class Scanner {
   Stream<ScanProgress> run(
       {bool includePowertrain = false,
       CanBus bus = CanBus.hs,
-      List<int>? addresses}) async* {
-    _cancel = false;
+      List<int>? addresses,
+      bool skip29IfFord = false}) async* {
     final found = <Module>[];
     const probe = Duration(milliseconds: 400);
     final ms = bus == CanBus.ms;
@@ -187,8 +222,24 @@ class Scanner {
 
     found.sort((a, b) => a.reqId.compareTo(b.reqId));
 
+    // Full sweep without a VIN: a car whose 11-bit modules answer the Ford
+    // way (at least two known Ford addresses, every response at request + 8)
+    // has no 29-bit diagnostic modules - skip that sweep (half the time).
+    // The 981 answers at request + 0x6A, so it always gets the 29-bit sweep.
+    final fordLike = skip29IfFord &&
+        found.where((m) => knownModules11[m.reqId]?.make == 'Ford').length >= 2 &&
+        found.every((m) => m.respId == m.reqId + 8);
+    if (fordLike && !_cancel && !ms && !targeted) {
+      yield ScanProgress(
+        phase: 'probe29',
+        message: 'modules answer the Ford way - 29-bit sweep skipped '
+            '(Settings > Full address sweep to include it)',
+        fraction: 0.8,
+      );
+    }
+
     // ---- 29-bit normal fixed (tester = 0xF1) - HS-CAN, full scan only ----
-    if (!_cancel && !ms && !targeted) {
+    if (!_cancel && !ms && !targeted && !fordLike) {
       await elm.setBits(29);
       await elm.setTimeoutMs(100); // 60 in the Python; Ford modules need a little more
       for (var ta = 0x00; ta < 0x100; ta++) {

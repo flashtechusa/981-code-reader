@@ -48,8 +48,17 @@ Wi-Fi ELM327 clone at `192.168.0.10:35000` (raw TCP, CR-terminated AT commands,
   `ATCF700/ATCM700`; 29-bit `ATCP`/`ATSH` + `ATCRA 18DAF1xx` or wide
   `ATCF 18DAF100 / ATCM 1FFFFF00`. `ATST` = ms/4 hex, max `0xFF`.
 * Scan starts by reading the VIN: `Scanner.readVin()` = UDS `22 F190` to
-  `0x7E0` (read-only, already on the allow-list - Mode 09 stays off the CAN
-  allow-list). `lib/core/vin.dart` decodes make (WMI) and model year (10th
+  `0x7E0`, then Ford BCM `0x726` and IPC `0x720` (read-only, already on the
+  allow-list - Mode 09 stays off the CAN allow-list). A cut-short answer is
+  re-read with `Elm327.setAutoFormatting(true)` (ATCAF1 for that one read:
+  the adapter does flow control in time for ~75 ms ISO 15765-4 timers that a
+  phone-side FC over Wi-Fi misses; bare payload in, same CAN frame; always
+  switched back to ATCAF0). Every failed attempt and its reason goes to the
+  scan output. No VIN + the 11-bit modules answer the Ford way (>= 2 known
+  Ford addresses, all responses at req + 8) -> 29-bit sweep skipped unless
+  "Full address sweep" is on. While scanning, CONNECT becomes STOP
+  (`Session.stopScan`, keeps the connection and what was found); the MS-CAN
+  offer only follows a finished scan on a live connection. `lib/core/vin.dart` decodes make (WMI) and model year (10th
   char) offline; the model is not decoded (needs an online VIN database).
   Ford / Lincoln / Mercury VIN and Settings "Full address sweep" off ->
   targeted scan: only `Scanner.fordAddresses(bus)` (known-address table,

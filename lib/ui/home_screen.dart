@@ -94,18 +94,21 @@ class _HomeScreenState extends State<HomeScreen> {
       s.msScanOffered = false;
       return;
     }
-    await s.scanMs();
+    final ran = await s.scanMs();
     if (!mounted) return;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: const Text('Flip the switch back to HS-CAN'),
-        content: const Text(
-          'MS-CAN scan done. Set the adapter switch back to HS-CAN now - '
-          'live data, the engine and airbag modules all live there.\n\n'
-          'MS-CAN modules stay in the list; to re-read or clear one of them '
-          'later the app will ask you to flip the switch again.',
+        content: Text(
+          ran
+              ? 'MS-CAN scan done. Set the adapter switch back to HS-CAN now - '
+                  'live data, the engine and airbag modules all live there.\n\n'
+                  'MS-CAN modules stay in the list; to re-read or clear one of '
+                  'them later the app will ask you to flip the switch again.'
+              : 'The MS-CAN scan did NOT run (${s.status}). Set the adapter '
+                  'switch back to HS-CAN, CONNECT, and run Vehicle again.',
         ),
         actions: [
           FilledButton(
@@ -315,13 +318,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: BarButton(
-                      label: 'CONNECT',
-                      color: AppColors.connect,
-                      onPressed: s.state == ConnState.disconnected
-                          ? () => s.connect()
-                          : null,
-                    ),
+                    child: s.scanning
+                        ? BarButton(
+                            label: 'STOP',
+                            color: AppColors.connect,
+                            onPressed: () => s.stopScan(),
+                          )
+                        : BarButton(
+                            label: 'CONNECT',
+                            color: AppColors.connect,
+                            onPressed: s.state == ConnState.disconnected
+                                ? () => s.connect()
+                                : null,
+                          ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(

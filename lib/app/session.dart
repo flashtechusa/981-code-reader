@@ -55,6 +55,18 @@ class Session extends ChangeNotifier {
   /// True when an HS scan has finished and MS-CAN has not been scanned yet.
   bool msScanOffered = false;
 
+  /// True while a Vehicle / MS-CAN scan runs (the CONNECT button becomes
+  /// STOP then).
+  bool scanning = false;
+
+  /// Stop the running scan after the current address; keeps the connection
+  /// and the modules found so far.
+  void stopScan() {
+    if (!scanning) return;
+    _scanner?.cancel();
+    _setStatus('stopping scan ...');
+  }
+
   void setAdapterBus(CanBus b) {
     adapterBus = b;
     notifyListeners();
@@ -216,6 +228,8 @@ class Session extends ChangeNotifier {
     }
     modules.clear();
     vehicle = null;
+    msScanOffered = false;
+    scanning = false;
     state = ConnState.disconnected;
     busy = false;
     try {
@@ -248,10 +262,12 @@ class Session extends ChangeNotifier {
     try {
       _setStatus('reading VIN');
       say('Reading VIN from the engine computer (0x7E0, 22 F190) ...');
-      final vin = await _scanner!.readVin();
+      scanning = true;
+      _scanner!.reset();
+      final vin = await _scanner!.readVin(onNote: say);
       vehicle = decodeVin(vin);
       if (vehicle == null) {
-        say('  no VIN answer - scanning every address.');
+        say('  no VIN - scanning every address.');
       } else {
         say('  VIN ${vehicle!.vin}  ->  ${vehicle!.summary}');
       }
@@ -270,12 +286,14 @@ class Session extends ChangeNotifier {
       final found = <Module>[];
       await for (final p in _scanner!.run(
           includePowertrain: settings.includePowertrain,
-          addresses: addresses)) {
+          addresses: addresses,
+          skip29IfFord: !settings.fullScan)) {
         if (p.phase == 'done') {
           found.addAll(p.found ?? const []);
         } else if (p.phase == 'identified') {
           say(p.message);
-        } else if (p.message.contains('answered')) {
+        } else if (p.message.contains('answered') ||
+            p.message.contains('skipped')) {
           say('  ${p.message}');
         }
         _setStatus(p.message);
@@ -283,15 +301,21 @@ class Session extends ChangeNotifier {
       modules
         ..clear()
         ..addAll(found);
-      if (found.isEmpty) {
+      final stopped = _scanner?.cancelled ?? true;
+      if (found.isEmpty && !stopped) {
         say('Nothing answered. Ignition on? Switch on HS-CAN?');
       }
-      msScanOffered = settings.hasMsSwitch && !legacyMode;
-      _setStatus('${found.length} module(s) found on HS-CAN');
+      // Offer MS-CAN only after a finished scan on a live connection.
+      msScanOffered =
+          settings.hasMsSwitch && !legacyMode && connected && !stopped;
+      _setStatus(stopped
+          ? 'Scan stopped - ${found.length} module(s) so far'
+          : '${found.length} module(s) found on HS-CAN');
     } catch (e) {
       say('ERROR: $e');
       _setStatus('Error', error: true);
     } finally {
+      scanning = false;
       busy = false;
       notifyListeners();
     }
@@ -300,9 +324,12 @@ class Session extends ChangeNotifier {
   /// Second half of a Ford-style scan: the user has flipped the adapter to
   /// MS-CAN (pins 3/11, 125 kbps). Appends MS modules to the list; the
   /// switch must be flipped back before HS modules are touched again.
-  Future<void> scanMs() async {
-    if (!_guard()) return;
+  /// Returns false when the scan could not run (not connected / busy).
+  Future<bool> scanMs() async {
+    if (!_guard()) return false;
     busy = true;
+    scanning = true;
+    _scanner!.reset();
     msScanOffered = false;
     adapterBus = CanBus.ms;
     stopLive();
@@ -335,9 +362,11 @@ class Session extends ChangeNotifier {
       say('ERROR: $e');
       _setStatus('Error', error: true);
     } finally {
+      scanning = false;
       busy = false;
       notifyListeners();
     }
+    return true;
   }
 
   /// Legacy bus: there is no module scan - read the engine ECU's generic

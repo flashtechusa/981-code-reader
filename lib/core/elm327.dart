@@ -80,6 +80,24 @@ class Elm327 {
   String? _rxState;
   String? _cpState;
 
+  // ATCAF1 for the duration of one read (see setAutoFormatting).
+  bool _autoFormat = false;
+  bool get autoFormatting => _autoFormat;
+
+  /// Let the adapter do ISO-TP framing itself (ATCAF1) instead of the raw
+  /// ATCAF0 mode. The adapter then answers a First Frame with Flow Control
+  /// at once - in time for ECUs with short ISO 15765-4 timers (~75 ms),
+  /// which a Flow Control sent from the phone over Wi-Fi can miss. The
+  /// request goes out as the bare payload; the adapter adds the length byte
+  /// and padding, so the CAN frame is the same. With ATH1 the adapter still
+  /// prints raw frames (header + PCI), so [parseFrames] is unchanged.
+  /// Only used around single reads (VIN); always switched back off.
+  Future<void> setAutoFormatting(bool on) async {
+    if (on == _autoFormat) return;
+    await cmd(on ? 'ATCAF1' : 'ATCAF0');
+    _autoFormat = on;
+  }
+
   void _forgetAddressing() {
     _shState = null;
     _rxState = null;
@@ -173,6 +191,7 @@ class Elm327 {
   /// Init sequence, verbatim from the reference.
   Future<void> init() async {
     _forgetAddressing();
+    _autoFormat = false;
     await cmd('ATZ', timeout: const Duration(seconds: 3));
     await Future<void>.delayed(const Duration(milliseconds: 500));
     await cmd('ATE0');
@@ -222,6 +241,7 @@ class Elm327 {
   /// adaptive timing on (K-line inter-byte timing varies a lot).
   Future<void> enterLegacy() async {
     _forgetAddressing();
+    _autoFormat = false;
     legacy = true;
     reqId = null;
     respId = null;
@@ -235,6 +255,7 @@ class Elm327 {
   /// Back to the raw-frame CAN configuration used by the UDS code.
   Future<void> leaveLegacy() async {
     _forgetAddressing();
+    _autoFormat = false;
     legacy = false;
     legacyProtocol = '';
     await cmd('ATCAF0');
@@ -354,7 +375,9 @@ class Elm327 {
     while (frame.length < 8) {
       frame.add(0x00);
     }
-    final text = await cmd(toHex(frame), timeout: timeout);
+    // ATCAF1: the adapter adds length byte + padding and does flow control.
+    final text = await cmd(toHex(_autoFormat ? payload : frame),
+        timeout: timeout);
     var (out, short) = parseFramesDetail(text, bits);
     if (short.isEmpty) return out;
 
@@ -369,7 +392,11 @@ class Elm327 {
     // consecutive frames had started, a second Flow Control would be wrong.
     final rid = respId;
     final got = rid == null ? null : short[rid];
-    if (short.length == 1 && got != null && got.$1 == 6 && got.$2 > 7) {
+    if (!_autoFormat &&
+        short.length == 1 &&
+        got != null &&
+        got.$1 == 6 &&
+        got.$2 > 7) {
       final frames = (got.$2 - 6 + 6) ~/ 7; // ceil((announced - 6) / 7) CFs due
       final wait = Duration(milliseconds: 1000 + frames * 30);
       final more = await cmd(flowControlFrame, timeout: wait);

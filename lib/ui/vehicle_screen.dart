@@ -42,6 +42,11 @@ class VehicleScreen extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: monoStyle.copyWith(fontSize: 12)),
                   ),
+                  if (s.scanning)
+                    TextButton(
+                      onPressed: s.stopScan,
+                      child: const Text('STOP'),
+                    ),
                 ],
               ),
             ),
@@ -50,7 +55,7 @@ class VehicleScreen extends StatelessWidget {
                 ? Center(
                     child: Text(
                       s.busy
-                          ? 'Scanning 0x700-0x7FF and 29-bit targets ...'
+                          ? 'Scanning ... (STOP keeps what was found so far)'
                           : 'No modules found.\nIgnition on? Switch on HS-CAN?',
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: AppColors.textDim),

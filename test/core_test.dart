@@ -49,6 +49,7 @@ void main() {
   _fordCodeTextTests();
   _vinFirstScanTests();
   _porscheLogTests();
+  _truckLogTests();
 
   group('fake adapter (ported Python test)', () {
     test('TesterPresent answers 7E 00', () async {
@@ -1116,6 +1117,107 @@ void _porscheLogTests() {
       await elm.setBits(11);
       await elm.setTarget(0x713, resp: 0x77D);
       expect(await Uds(elm).readDtcs(), hasLength(3));
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// F-150 run 2026-11-12: VIN not read, slow full sweep, MS prompt after stop
+// ---------------------------------------------------------------------------
+void _truckLogTests() {
+  const vinFrames = '10 14 62 F1 90 31 46 54\r'
+      '{h} 21 45 57 31 45 47 35 46\r'
+      '{h} 22 46 41 31 32 33 34 35\r>';
+  String vinFrom(String h) => '$h ${vinFrames.replaceAll('{h}', h)}';
+
+  test('VIN falls back to the Ford BCM when 0x7E0 is silent', () async {
+    var sh = '';
+    final t = MockTransport((cmd) {
+      final c = cmd.trim().toUpperCase();
+      if (c.startsWith('ATSH')) {
+        sh = c.substring(4);
+        return 'OK\r>';
+      }
+      if (c.startsWith('AT')) return 'OK\r>';
+      if (sh == '726' && c.startsWith('03 22 F1 90')) return vinFrom('72E');
+      return 'NO DATA\r>';
+    }, latency: Duration.zero);
+    final elm = Elm327(t);
+    await elm.open();
+    final notes = <String>[];
+    final vin = await Scanner(elm, Uds(elm)).readVin(onNote: notes.add);
+    expect(vin, '1FTEW1EG5FFA12345');
+    expect(notes.first, contains('0x7E0: no answer'));
+    expect(notes.last, contains('VIN read from 0x726'));
+    expect(t.sent, isNot(contains('ATCAF1')),
+        reason: 'silent address: no adapter-framing retry');
+  });
+
+  test('cut-short VIN is re-read with adapter flow control (ATCAF1)',
+      () async {
+    var caf1 = false;
+    final t = MockTransport((cmd) {
+      final c = cmd.trim().toUpperCase();
+      if (c == 'ATCAF1') caf1 = true;
+      if (c == 'ATCAF0') caf1 = false;
+      if (c.startsWith('AT')) return 'OK\r>';
+      // Raw mode: only the First Frame arrives, our Flow Control is too late.
+      if (!caf1 && c.startsWith('03 22 F1 90')) {
+        return '7E8 10 14 62 F1 90 31 46 54\r>';
+      }
+      if (!caf1 && c == Elm327.flowControlFrame) return 'NO DATA\r>';
+      // Adapter framing: bare payload in, complete answer out.
+      if (caf1 && c == '22 F1 90') return vinFrom('7E8');
+      return 'NO DATA\r>';
+    }, latency: Duration.zero);
+    final elm = Elm327(t);
+    await elm.open();
+    final notes = <String>[];
+    final vin = await Scanner(elm, Uds(elm)).readVin(onNote: notes.add);
+    expect(vin, '1FTEW1EG5FFA12345');
+    expect(notes.first, contains('incomplete'));
+    expect(notes.last, contains('adapter flow control'));
+    expect(t.sent, containsAllInOrder(['ATCAF1', '22 F1 90', 'ATCAF0']));
+    expect(t.sent.last, 'ATCAF0', reason: 'always back to raw mode');
+    expect(elm.autoFormatting, isFalse);
+  });
+
+  group('no VIN: 29-bit sweep skipped only for a Ford-like car', () {
+    Future<List<String>> sweep(Map<String, String> answers) async {
+      var sh = '';
+      final t = MockTransport((cmd) {
+        final c = cmd.trim().toUpperCase();
+        if (c.startsWith('ATSH')) {
+          sh = c.substring(4);
+          return 'OK\r>';
+        }
+        if (c.startsWith('AT')) return 'OK\r>';
+        final a = answers[sh];
+        if (a != null && c.startsWith('02 3E 00')) {
+          return '$a 02 7E 00 00 00 00 00 00\r>';
+        }
+        return 'NO DATA\r>';
+      }, latency: Duration.zero);
+      final elm = Elm327(t);
+      await elm.open();
+      final msgs = <String>[];
+      await for (final p
+          in Scanner(elm, Uds(elm)).run(skip29IfFord: true)) {
+        msgs.add(p.message);
+      }
+      return [...msgs, ...t.sent];
+    }
+
+    test('BCM + PAM at +8 (the F-150): skipped', () async {
+      final out = await sweep({'726': '72E', '736': '73E'});
+      expect(out.any((m) => m.contains('29-bit sweep skipped')), isTrue);
+      expect(out.where((c) => c.startsWith('ATCP')), isEmpty);
+    });
+
+    test('981 pattern (+0x6A): 29-bit sweep still runs', () async {
+      final out = await sweep({'726': '72E', '736': '73E', '715': '77F'});
+      expect(out.any((m) => m.contains('29-bit sweep skipped')), isFalse);
+      expect(out.where((c) => c.startsWith('ATCP')), isNotEmpty);
     });
   });
 }
